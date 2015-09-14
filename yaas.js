@@ -11,10 +11,36 @@ var verbose = false;
 var clientId, clientSecret, scope;
 var accessToken;
 
-exports.init = function (cid, cs, sc) {
-	clientId = cid;
-	clientSecret = cs;
-	scope = sc;
+exports.init = function () {
+	return new Promise(function (resolve, reject) {
+		if (debug) {
+			console.log("Client ID:", clientId);
+			console.log("Client secret:", clientSecret);
+			console.log("Scope:", scope);
+		}
+	
+		if (!clientId || !clientSecret || !scope) {
+			reject("Client ID, Client Secret and Scope have to be set!");
+		} else {
+			getToken().then(function () {
+				resolve();
+			}).catch(function () {
+				reject();
+			});
+		}
+	});
+};
+
+exports.setClientId = function (value) {
+	clientId = value;
+}
+
+exports.setClientSecret = function (value) {
+	clientSecret = value;
+}
+
+exports.setScope = function (value) {
+	scope = value;
 }
 
 exports.setDebug = function (state) {
@@ -25,30 +51,33 @@ exports.setVerbose = function (state) {
 	verbose = state;
 }
 
-exports.getToken = function (callback) {
-	sendPostRequest(
-		pathToken,
-		'application/x-www-form-urlencoded',
-		querystring.stringify({
-			'grant_type' : 'client_credentials',
-			'scope' : scope,
-			'client_id' : clientId,
-			'client_secret' : clientSecret
-		}),
-		function(statusCode, responseBody) {
-			if (statusCode == 200) {
-				accessToken = responseBody.access_token;
-				if (debug) {
-					console.log('Received access token: ' + accessToken);
-					console.log("Granted scopes: " + responseBody.scope);
+function getToken() {
+	return new Promise(function (resolve, reject) {
+		sendPostRequest(
+			pathToken,
+			'application/x-www-form-urlencoded',
+			querystring.stringify({
+				'grant_type' : 'client_credentials',
+				'scope' : scope,
+				'client_id' : clientId,
+				'client_secret' : clientSecret
+			}),
+			function(statusCode, responseBody) {
+				if (statusCode == 200) {
+					accessToken = responseBody.access_token;
+					if (debug) {
+						console.log('Received access token: ' + accessToken);
+						console.log("Granted scopes: " + responseBody.scope);
+					}
+					resolve();
+				} else {
+					console.error("Could not obtain token!");
+					console.error(JSON.stringify(responseBody));
+					reject();
 				}
-				callback();
-			} else {
-				console.log("Could not obtain token!");
-				console.log(JSON.stringify(responseBody));
 			}
-		}
-	);
+		);
+	});
 }
 
 function sendPostRequest(path, mime, postData, callback) {
@@ -101,7 +130,6 @@ function onResponse(res) {
 		if (res.statusCode == 401) {
 			// TODO reauthenticate
 			console.log("!!!UNAUTHORIZED!!!");
-			sendSerial("DO_ERROR");
 			return;
 		}
 		
