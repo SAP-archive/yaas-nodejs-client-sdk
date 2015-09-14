@@ -61,91 +61,100 @@ function getToken() {
 				'scope' : scope,
 				'client_id' : clientId,
 				'client_secret' : clientSecret
-			}),
-			function(statusCode, responseBody) {
-				if (statusCode == 200) {
-					accessToken = responseBody.access_token;
-					if (debug) {
-						console.log('Received access token: ' + accessToken);
-						console.log("Granted scopes: " + responseBody.scope);
-					}
-					resolve();
-				} else {
-					console.error("Could not obtain token!");
-					console.error(JSON.stringify(responseBody));
-					reject();
+			})
+		).then(function (response) {
+			if (response.statusCode == 200) {
+				accessToken = response.body.access_token;
+				if (debug) {
+					console.log('Received access token: ' + accessToken);
+					console.log("Granted scopes: " + response.body.scope);
 				}
+				resolve();
+			} else {
+				console.error("Could not obtain token!");
+				console.error(JSON.stringify(response.body));
+				reject();
 			}
-		);
+		});
 	});
 }
 
-function sendPostRequest(path, mime, postData, callback) {
-	if (debug) {
-		console.log('Sending POST data: ' + postData);
-	}
+function sendRequest(method, path, mime, data) {
+	return new Promise(function (resolve, reject) {
+		var headers = {
+			'Content-Type': mime
+		};
 	
-	var headers = {
-		'Content-Type': mime
-	};
+		if (accessToken != null) {
+			headers['Authorization'] = 'Bearer ' + accessToken;
+		}
 	
-	if (accessToken != null) {
-		headers['Authorization'] = 'Bearer ' + accessToken;
-	}
+		var options = {
+			hostname: yaasHost,
+			port: 443,
+			path: path,
+			method: method,
+			headers: headers
+		};
 	
-	var options = {
-		hostname: yaasHost,
-		port: 443,
-		path: path,
-		method: 'POST',
-		headers: headers
-	};
-	
-	var req = https.request(options, onResponse.bind({callback : callback}));
-	
-	req.on('error', function(e) {
-		console.log('problem with request: ' + e.message);
-	});
+		var req = https.request(options, function (res) {
+			res.setEncoding('utf8');
+			var data = "";
 
-	// write data to request body
-	req.write(postData);
-	req.end();
+			res.on('data', function (chunk) {
+				data += chunk;
+			});
+
+			res.on('end', function() {
+				if (debug) {
+					console.log('Status code: ' + res.statusCode);
+					console.log('Headers: ' + JSON.stringify(res.headers));
+					console.log('Body: ' + data);
+				}
+		
+				if (res.statusCode >= 400) {
+					reject(res.statusCode);
+				} else {
+					var responseBody;
+					var responseMime;
+					if (res.headers['content-type']) {
+						responseMime = res.headers['content-type'].split(';')[0];
+					}
+					switch (responseMime) {
+					case 'text/plain':
+						responseBody = data;
+						break;
+					case 'application/json':
+						try {
+							responseBody = JSON.parse(data);
+						} catch (e) {
+							return reject('Could not read server response: ' + e.message);
+						}
+						break;
+					default:
+						responseBody = data;
+					}
+					resolve({statusCode: res.statusCode, body: responseBody});
+				}
+			});
+		});
+	
+		req.on('error', function(e) {
+			reject('problem with request: ' + e.message);
+		});
+
+		if (data && (method == 'POST' || method == 'PUT')) {
+			if (debug) {
+				console.log('Sending data: ' + data);
+			}
+			req.write(data);
+		}
+		req.end();
+	});
 }
 
-function onResponse(res) {
-	res.setEncoding('utf8');
-	var data = "";
-
-	res.on('data', function (chunk) {
-		data += chunk;
-	});
-
-	res.on('end', function() {
-		if (debug) {
-			console.log('Status code: ' + res.statusCode);
-			console.log('Headers: ' + JSON.stringify(res.headers));
-			console.log('Body: ' + data);
-		}
-		
-		if (res.statusCode == 401) {
-			// TODO reauthenticate
-			console.log("!!!UNAUTHORIZED!!!");
-			return;
-		}
-		
-		var responseBody;
-		try {
-			responseBody = (data.length == 0 ? {} : JSON.parse(data));
-		} catch (e) {
-			console.log('Could not read answer!');
-			if (e instanceof Error) {
-				console.log('Error: ' + e.message);
-			}
-			return;
-		}
-		
-		this.callback(res.statusCode, responseBody);
-	}.bind({callback : this.callback}));
+function sendPostRequest(path, mime, postData) {
+	return sendRequest('POST', path, mime, postData);
 }
 
 exports.checkForOrderStatusChange = function (callback) {
@@ -156,43 +165,44 @@ exports.checkForOrderStatusChange = function (callback) {
 		JSON.stringify({
 			"numEvents": 1,
 			"autoCommit": false
-		}),
-		function(statusCode, responseBody) {
-			if (statusCode == 204) {
-				if (verbose) {
-					console.log("No events available");
-				}
-				callback();
-			} else if (statusCode == 200) {
-				var events = responseBody.events;
-				events.forEach(function(event) {
-					if (debug) {
-						console.log("Processing event: %s", JSON.stringify(event));
-					}
-					
-					if (event.eventType != "order-status-changed") {
-						console.log("Wrong event type: %s!", event.eventType);
-						return;
-					}
-					
-					var payload;
-					try {
-						payload = JSON.parse(event.payload);
-					} catch (e) {
-						console.log("Could not parse payload");
-						callback(new Error("Could not parse payload: " + e.message));
-						return;
-					}
-					callback(null, payload, responseBody.token);
-				});
-			} else {
-				if (debug) {
-					console.log("Problem: " + JSON.stringify(responseBody));
-				}
-				callback(new Error("Problem with request: " + JSON.stringify(responseBody)));
+		})
+	).then(function (response) {
+		if (response.statusCode == 204) {
+			if (verbose) {
+				console.log("No events available");
 			}
+			callback();
+		} else if (response.statusCode == 200) {
+			var events = response.body.events;
+			events.forEach(function(event) {
+				if (debug) {
+					console.log("Processing event: %s", JSON.stringify(event));
+				}
+				
+				if (event.eventType != "order-status-changed") {
+					console.log("Wrong event type: %s!", event.eventType);
+					return;
+				}
+				
+				var payload;
+				try {
+					payload = JSON.parse(event.payload);
+				} catch (e) {
+					console.log("Could not parse payload");
+					callback(new Error("Could not parse payload: " + e.message));
+					return;
+				}
+				callback(null, payload, response.body.token);
+			});
+		} else {
+			if (debug) {
+				console.log("Problem: " + JSON.stringify(response.body));
+			}
+			callback(new Error("Problem with request: " + JSON.stringify(response.body)));
 		}
-	);
+	}).catch(function (reason) {
+		callback(new Error(reason));
+	});
 }
 
 exports.commitEvents = function (token, callback) {
@@ -203,19 +213,20 @@ exports.commitEvents = function (token, callback) {
 		'application/json',
 		JSON.stringify({
 			"token": token
-		}),
-		function(statusCode, responseBody) {
-			if (statusCode == 200) {
-				if (verbose) {
-					console.log("Event(s) committed");
-				}
-				callback();
-			} else {
-				if (debug) {
-					console.log("Problem: " + JSON.stringify(responseBody));
-				}
-				callback(new Error("Problem: " + JSON.stringify(responseBody)));
+		})
+	).then(function (response) {
+		if (response.statusCode == 200) {
+			if (verbose) {
+				console.log("Event(s) committed");
 			}
+			callback();
+		} else {
+			if (debug) {
+				console.log("Problem: " + JSON.stringify(response.body));
+			}
+			callback(new Error("Problem: " + JSON.stringify(response.body)));
 		}
-	);
+	}).catch(function (reason) {
+		callback(new Error(reason));
+	});
 }
