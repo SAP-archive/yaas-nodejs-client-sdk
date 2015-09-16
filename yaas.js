@@ -157,13 +157,12 @@ function sendPostRequest(path, mime, postData) {
 	return sendRequest('POST', path, mime, postData);
 }
 
-exports.checkForOrderStatusChange = function (callback) {
-	if (verbose) {console.log("Checking for order status changes...");}
-	sendPostRequest(
-		pathPubSubBase + '/hybris.order/order-status-changed/read',
+function readPubSub(topicOwnerClient, eventType, numEvents) {
+	return sendPostRequest(
+		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/read',
 		'application/json',
 		JSON.stringify({
-			"numEvents": 1,
+			"numEvents": numEvents,
 			"autoCommit": false
 		})
 	).then(function (response) {
@@ -171,38 +170,23 @@ exports.checkForOrderStatusChange = function (callback) {
 			if (verbose) {
 				console.log("No events available");
 			}
-			callback();
+			return;
 		} else if (response.statusCode == 200) {
-			var events = response.body.events;
-			events.forEach(function(event) {
-				if (debug) {
-					console.log("Processing event: %s", JSON.stringify(event));
-				}
-				
-				if (event.eventType != "order-status-changed") {
-					console.log("Wrong event type: %s!", event.eventType);
-					return;
-				}
-				
-				var payload;
-				try {
-					payload = JSON.parse(event.payload);
-				} catch (e) {
-					console.log("Could not parse payload");
-					callback(new Error("Could not parse payload: " + e.message));
-					return;
-				}
-				callback(null, payload, response.body.token);
-			});
+			return response.body;
 		} else {
 			if (debug) {
 				console.log("Problem: " + JSON.stringify(response.body));
 			}
-			callback(new Error("Problem with request: " + JSON.stringify(response.body)));
+			throw new Error("Problem with request: " + JSON.stringify(response.body));
 		}
-	}).catch(function (reason) {
-		callback(new Error(reason));
-	});
+	}, function(reason) {
+		if (verbose) {console.error("Could not read from PubSub:", reason);}
+	})
+}
+
+exports.checkForOrderStatusChange = function () {
+	if (verbose) {console.log("Checking for order status changes...");}
+	return readPubSub('hybris.order', 'order-status-changed', 1);
 }
 
 exports.commitEvents = function (token, callback) {
