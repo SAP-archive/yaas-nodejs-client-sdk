@@ -3,12 +3,19 @@ var querystring = require('querystring');
 
 var yaasHost = 'api.yaas.io';
 var pathToken = '/hybris/oauth2/b1/token';
-var pathPubSubBase = '/hybris/pubsub/b2/topics';
+var pathCartBase;
+var pathCheckout;
+var pathCustomerBase;
 var pathOrderBase = '/hybris/order/b1';
+var pathPriceBase;
+var pathProductBase;
+var pathPubSubBase = '/hybris/pubsub/b2/topics';
+var pathSalesorderBase;
+var pathSiteBase;
 
 var debug = false;
 var verbose = false;
-var clientId, clientSecret, scope;
+var clientId, clientSecret, projectId, scope;
 var accessToken;
 
 exports.init = function () {
@@ -31,6 +38,18 @@ exports.setClientId = function (value) {
 
 exports.setClientSecret = function (value) {
 	clientSecret = value;
+}
+
+exports.setProjectId = function (value) {
+	projectId = value;
+
+	pathCartBase = '/hybris/cart/b1/' + projectId + '/carts';
+	pathCheckout = '/hybris/checkout/b1/' + projectId + '/checkouts/order';
+	pathCustomerBase = '/hybris/customer/b1/' + projectId + '/customers';
+	pathPriceBase = '/hybris/price/b1/' + projectId + '/prices';
+	pathProductBase = '/hybris/product/b1/' + projectId + '/products';
+	pathSalesorderBase = '/hybris/order/b1/' + projectId + '/salesorders';
+	pathSiteBase = '/hybris/site/b1/' + projectId + '/sites';
 }
 
 exports.setScope = function (value) {
