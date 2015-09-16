@@ -12,23 +12,17 @@ var clientId, clientSecret, scope;
 var accessToken;
 
 exports.init = function () {
-	return new Promise(function (resolve, reject) {
-		if (debug) {
-			console.log("Client ID:", clientId);
-			console.log("Client secret:", clientSecret);
-			console.log("Scope:", scope);
-		}
+	if (debug) {
+		console.log("Client ID:", clientId);
+		console.log("Client secret:", clientSecret);
+		console.log("Scope:", scope);
+	}
+
+	if (!clientId || !clientSecret || !scope) {
+		throw new Error("Client ID, Client Secret and Scope have to be set!");
+	}
 	
-		if (!clientId || !clientSecret || !scope) {
-			reject("Client ID, Client Secret and Scope have to be set!");
-		} else {
-			getToken().then(function () {
-				resolve();
-			}).catch(function () {
-				reject();
-			});
-		}
-	});
+	return getToken();
 };
 
 exports.setClientId = function (value) {
@@ -52,30 +46,28 @@ exports.setVerbose = function (state) {
 }
 
 function getToken() {
-	return new Promise(function (resolve, reject) {
-		sendPostRequest(
-			pathToken,
-			'application/x-www-form-urlencoded',
-			querystring.stringify({
-				'grant_type' : 'client_credentials',
-				'scope' : scope,
-				'client_id' : clientId,
-				'client_secret' : clientSecret
-			})
-		).then(function (response) {
-			if (response.statusCode == 200) {
-				accessToken = response.body.access_token;
-				if (debug) {
-					console.log('Received access token: ' + accessToken);
-					console.log("Granted scopes: " + response.body.scope);
-				}
-				resolve();
-			} else {
-				console.error("Could not obtain token!");
-				console.error(JSON.stringify(response.body));
-				reject();
+	return sendPostRequest(
+		pathToken,
+		'application/x-www-form-urlencoded',
+		querystring.stringify({
+			'grant_type' : 'client_credentials',
+			'scope' : scope,
+			'client_id' : clientId,
+			'client_secret' : clientSecret
+		})
+	).then(function (response) {
+		if (response.statusCode == 200) {
+			accessToken = response.body.access_token;
+			if (debug) {
+				console.log('Received access token: ' + accessToken);
+				console.log("Granted scopes: " + response.body.scope);
 			}
-		});
+			return true;
+		} else {
+			console.error("Could not obtain token!");
+			console.error(JSON.stringify(response.body));
+			return false;
+		}
 	});
 }
 
@@ -189,11 +181,11 @@ exports.checkForOrderStatusChange = function () {
 	return readPubSub('hybris.order', 'order-status-changed', 1);
 }
 
-exports.commitEvents = function (token, callback) {
+exports.commitEvents = function (topicOwnerClient, eventType, token) {
 	if (verbose) {console.log("Committing events...");}
 	
-	sendPostRequest(
-		pathPubSubBase + '/hybris.order/order-status-changed/commit',
+	return sendPostRequest(
+		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/commit',
 		'application/json',
 		JSON.stringify({
 			"token": token
@@ -203,14 +195,13 @@ exports.commitEvents = function (token, callback) {
 			if (verbose) {
 				console.log("Event(s) committed");
 			}
-			callback();
+			return true;
 		} else {
+			var errorMessage = "Problem: " + JSON.stringify(response.body);
 			if (debug) {
-				console.log("Problem: " + JSON.stringify(response.body));
+				console.log(errorMessage);
 			}
-			callback(new Error("Problem: " + JSON.stringify(response.body)));
+			return new Error(errorMessage);
 		}
-	}).catch(function (reason) {
-		callback(new Error(reason));
 	});
 }
