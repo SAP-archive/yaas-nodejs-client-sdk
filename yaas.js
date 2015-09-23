@@ -48,7 +48,7 @@ exports.setProjectId = function (value) {
 	pathCustomerBase = '/hybris/customer/b1/' + projectId + '/customers';
 	pathPriceBase = '/hybris/price/b1/' + projectId + '/prices';
 	pathProductBase = '/hybris/product/b1/' + projectId + '/products';
-	pathSalesorderBase = '/hybris/order/b1/' + projectId + '/salesorders';
+	pathOrderBase = '/hybris/order/b1/' + projectId;
 	pathSiteBase = '/hybris/site/b1/' + projectId + '/sites';
 }
 
@@ -92,9 +92,11 @@ function getToken() {
 
 function sendRequest(method, path, mime, data) {
 	return new Promise(function (resolve, reject) {
-		var headers = {
-			'Content-Type': mime
-		};
+		var headers = {};
+		
+		if (mime != null) {
+			headers['Content-Type'] = mime;
+		}
 	
 		if (accessToken != null) {
 			headers['Authorization'] = 'Bearer ' + accessToken;
@@ -107,6 +109,8 @@ function sendRequest(method, path, mime, data) {
 			method: method,
 			headers: headers
 		};
+		
+		if (debug) {console.log("Sending request to", yaasHost + path);}
 	
 		var req = https.request(options, function (res) {
 			res.setEncoding('utf8');
@@ -162,6 +166,11 @@ function sendRequest(method, path, mime, data) {
 		}
 		req.end();
 	});
+}
+
+function sendGetRequest(path, params) {
+	var pathWithParams = path + (params.length > 0 ? '?' + querystring.stringify(params) : '');
+	return sendRequest('GET', pathWithParams, null, {});
 }
 
 function sendPostRequest(path, mime, postData) {
@@ -223,4 +232,14 @@ exports.commitEvents = function (topicOwnerClient, eventType, token) {
 			return new Error(errorMessage);
 		}
 	});
+}
+
+exports.getOrderDetails = function (orderId) {
+	if (verbose) {console.log("Getting order details for order %s...", orderId);}
+	return sendGetRequest(pathOrderBase + '/orders/' + orderId, {});
+}
+
+exports.getSalesorderDetails = function (orderId) {
+	if (verbose) {console.log("Getting salesorder details for order %s...", orderId);}
+	return sendGetRequest(pathOrderBase + '/salesorders/' + orderId, {});
 }
