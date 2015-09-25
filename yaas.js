@@ -177,12 +177,13 @@ function sendPostRequest(path, mime, postData) {
 	return sendRequest('POST', path, mime, postData);
 }
 
-function readPubSub(topicOwnerClient, eventType, numEvents) {
+exports.readPubSub = function (topicOwnerClient, eventType, numEvents) {
 	return sendPostRequest(
 		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/read',
 		'application/json',
 		JSON.stringify({
 			"numEvents": numEvents,
+			"ttlMs": 4000,
 			"autoCommit": false
 		})
 	).then(function (response) {
@@ -192,6 +193,15 @@ function readPubSub(topicOwnerClient, eventType, numEvents) {
 			}
 			return;
 		} else if (response.statusCode == 200) {
+			// convert payloads into proper nested JSON
+			response.body.events.forEach(function(event) {
+				try {
+					event.payload = JSON.parse(event.payload);
+				} catch (e) {
+					console.log("Could not parse payload");
+					throw new Error("Could not parse payload: " + e.message);
+				}
+			});
 			return response.body;
 		} else {
 			if (debug) {
@@ -202,11 +212,6 @@ function readPubSub(topicOwnerClient, eventType, numEvents) {
 	}, function(reason) {
 		if (verbose) {console.error("Could not read from PubSub:", reason);}
 	})
-}
-
-exports.checkForOrderStatusChange = function () {
-	if (verbose) {console.log("Checking for order status changes...");}
-	return readPubSub('hybris.order', 'order-status-changed', 1);
 }
 
 exports.commitEvents = function (topicOwnerClient, eventType, token) {
@@ -234,12 +239,17 @@ exports.commitEvents = function (topicOwnerClient, eventType, token) {
 	});
 }
 
-exports.getOrderDetails = function (orderId) {
-	if (verbose) {console.log("Getting order details for order %s...", orderId);}
-	return sendGetRequest(pathOrderBase + '/orders/' + orderId, {});
-}
-
 exports.getSalesorderDetails = function (orderId) {
 	if (verbose) {console.log("Getting salesorder details for order %s...", orderId);}
-	return sendGetRequest(pathOrderBase + '/salesorders/' + orderId, {});
+	return sendGetRequest(pathOrderBase + '/salesorders/' + orderId, {}).then(function (response) {
+		if (response.statusCode == 200) {
+			return response.body;
+		} else {
+			var errorMessage = "Problem: " + JSON.stringify(response.body);
+			if (debug) {
+				console.log(errorMessage);
+			}
+			return new Error(errorMessage);
+		}
+	});
 }
