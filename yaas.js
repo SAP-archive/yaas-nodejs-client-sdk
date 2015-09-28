@@ -18,27 +18,18 @@ var verbose = false;
 var clientId, clientSecret, projectId, scope;
 var accessToken;
 
-exports.init = function () {
-	if (debug) {
-		console.log("Client ID:", clientId);
-		console.log("Client secret:", clientSecret);
-		console.log("Scope:", scope);
-	}
-
-	if (!clientId || !clientSecret || !scope) {
-		throw new Error("Client ID, Client Secret and Scope have to be set!");
-	}
-	
-	return getToken();
+exports.init = function (theClientId, theClientSecret, theScope) {
+	return new Promise(function (resolve, reject) {
+		if (!theClientId || !theClientSecret || !theScope) {
+			reject(new Error("Client ID, Client Secret and Scope have to be set!"));
+		} else {
+			clientId = theClientId;
+			clientSecret = theClientSecret;
+			scope = theScope;
+			resolve();
+		}
+	}).then(getToken);
 };
-
-exports.setClientId = function (value) {
-	clientId = value;
-}
-
-exports.setClientSecret = function (value) {
-	clientSecret = value;
-}
 
 exports.setProjectId = function (value) {
 	projectId = value;
@@ -50,10 +41,6 @@ exports.setProjectId = function (value) {
 	pathProductBase = '/hybris/product/b1/' + projectId + '/products';
 	pathOrderBase = '/hybris/order/b1/' + projectId;
 	pathSiteBase = '/hybris/site/b1/' + projectId + '/sites';
-}
-
-exports.setScope = function (value) {
-	scope = value;
 }
 
 exports.setDebug = function (state) {
@@ -81,11 +68,11 @@ function getToken() {
 				console.log('Received access token: ' + accessToken);
 				console.log("Granted scopes: " + response.body.scope);
 			}
-			return true;
+			return Promise.resolve();
 		} else {
 			console.error("Could not obtain token!");
 			console.error(JSON.stringify(response.body));
-			return false;
+			return Promise.reject();
 		}
 	});
 }
