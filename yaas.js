@@ -218,6 +218,31 @@ function fixEventPayload(events) {
 	});
 }
 
+exports.commitEvents = function (topicOwnerClient, eventType, token) {
+	if (verbose) {console.log("Committing events...");}
+	
+	return sendPostRequest(
+		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/commit',
+		'application/json',
+		JSON.stringify({
+			"token": token
+		})
+	).then(function (response) {
+		if (response.statusCode == 200) {
+			if (verbose) {
+				console.log("Event(s) committed");
+			}
+			return Promise.resolve();
+		} else {
+			var errorMessage = "Problem: " + JSON.stringify(response.body);
+			if (debug) {
+				console.log(errorMessage);
+			}
+			return Promise.reject(new Error(errorMessage));
+		}
+	});
+}
+
 exports.readPubSub = function (topicOwnerClient, eventType, numEvents) {
 	return sendPostRequest(
 		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/read',
@@ -246,31 +271,6 @@ exports.readPubSub = function (topicOwnerClient, eventType, numEvents) {
 	});
 }
 
-exports.commitEvents = function (topicOwnerClient, eventType, token) {
-	if (verbose) {console.log("Committing events...");}
-	
-	return sendPostRequest(
-		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/commit',
-		'application/json',
-		JSON.stringify({
-			"token": token
-		})
-	).then(function (response) {
-		if (response.statusCode == 200) {
-			if (verbose) {
-				console.log("Event(s) committed");
-			}
-			return Promise.resolve();
-		} else {
-			var errorMessage = "Problem: " + JSON.stringify(response.body);
-			if (debug) {
-				console.log(errorMessage);
-			}
-			return Promise.reject(new Error(errorMessage));
-		}
-	});
-}
-
 exports.getSalesorderDetails = function (orderId) {
 	if (verbose) {console.log("Getting salesorder details for order %s...", orderId);}
 	return sendGetRequest(pathOrderBase + '/salesorders/' + orderId, {}).then(function (response) {
@@ -285,3 +285,4 @@ exports.getSalesorderDetails = function (orderId) {
 		}
 	});
 }
+
