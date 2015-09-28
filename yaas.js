@@ -140,7 +140,9 @@ function sendRequest(method, path, mime, data) {
 				return sendRequest(method, path, mime, data);
 			});
 		} else {
-			return Promise.resolve(response).then(processResponseBody).then(checkForServerError);
+			return Promise.resolve(response)
+			.then(processResponseBody)
+			.then(checkForServerError);
 		}
 	});
 }
@@ -199,6 +201,23 @@ function sendPostRequest(path, mime, postData) {
 	return sendRequest('POST', path, mime, postData);
 }
 
+/**
+ * Convert PubSub event payloads into proper nested JSON
+ */
+function fixEventPayload(events) {
+	return new Promise(function (resolve, reject) {
+		events.forEach(function(event) {
+			try {
+				event.payload = JSON.parse(event.payload);
+			} catch (e) {
+				console.log("Could not parse payload");
+				return reject(new Error("Could not parse payload: " + e.message));
+			}
+		});
+		resolve();
+	});
+}
+
 exports.readPubSub = function (topicOwnerClient, eventType, numEvents) {
 	return sendPostRequest(
 		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/read',
@@ -213,27 +232,18 @@ exports.readPubSub = function (topicOwnerClient, eventType, numEvents) {
 			if (verbose) {
 				console.log("No events available");
 			}
-			return;
+			return Promise.resolve();
 		} else if (response.statusCode == 200) {
-			// convert payloads into proper nested JSON
-			response.body.events.forEach(function(event) {
-				try {
-					event.payload = JSON.parse(event.payload);
-				} catch (e) {
-					console.log("Could not parse payload");
-					throw new Error("Could not parse payload: " + e.message);
-				}
+			return fixEventPayload(response.body.events).then(function() {
+				return Promise.resolve(response.body);
 			});
-			return response.body;
 		} else {
 			if (debug) {
 				console.log("Problem: " + JSON.stringify(response.body));
 			}
-			throw new Error("Problem with request: " + JSON.stringify(response.body));
+			return Promise.reject(new Error("Problem with request: " + JSON.stringify(response.body)));
 		}
-	}, function(reason) {
-		if (verbose) {console.error("Could not read from PubSub:", reason);}
-	})
+	});
 }
 
 exports.commitEvents = function (topicOwnerClient, eventType, token) {
@@ -250,13 +260,13 @@ exports.commitEvents = function (topicOwnerClient, eventType, token) {
 			if (verbose) {
 				console.log("Event(s) committed");
 			}
-			return true;
+			return Promise.resolve();
 		} else {
 			var errorMessage = "Problem: " + JSON.stringify(response.body);
 			if (debug) {
 				console.log(errorMessage);
 			}
-			return new Error(errorMessage);
+			return Promise.reject(new Error(errorMessage));
 		}
 	});
 }
@@ -265,13 +275,13 @@ exports.getSalesorderDetails = function (orderId) {
 	if (verbose) {console.log("Getting salesorder details for order %s...", orderId);}
 	return sendGetRequest(pathOrderBase + '/salesorders/' + orderId, {}).then(function (response) {
 		if (response.statusCode == 200) {
-			return response.body;
+			return Promise.resolve(response.body);
 		} else {
 			var errorMessage = "Problem: " + JSON.stringify(response.body);
 			if (debug) {
 				console.log(errorMessage);
 			}
-			return new Error(errorMessage);
+			return Promise.reject(new Error(errorMessage));
 		}
 	});
 }
