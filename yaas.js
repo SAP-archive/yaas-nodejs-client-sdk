@@ -126,31 +126,8 @@ function sendRequest(method, path, mime, data) {
 					console.log('Headers: ' + JSON.stringify(res.headers));
 					console.log('Body: ' + data);
 				}
-		
-				if (res.statusCode >= 400) {
-					reject(res.statusCode);
-				} else {
-					var responseBody;
-					var responseMime;
-					if (res.headers['content-type']) {
-						responseMime = res.headers['content-type'].split(';')[0];
-					}
-					switch (responseMime) {
-					case 'text/plain':
-						responseBody = data;
-						break;
-					case 'application/json':
-						try {
-							responseBody = JSON.parse(data);
-						} catch (e) {
-							return reject('Could not read server response: ' + e.message);
-						}
-						break;
-					default:
-						responseBody = data;
-					}
-					resolve({statusCode: res.statusCode, body: responseBody});
-				}
+				
+				resolve({statusCode: res.statusCode, headers: res.headers, body: data});
 			});
 		});
 	
@@ -165,6 +142,64 @@ function sendRequest(method, path, mime, data) {
 			req.write(data);
 		}
 		req.end();
+	})
+	.then(function (response) {
+		// Check for authorization errors
+		if (response.statusCode == 401) {
+			console.log("Unauthorized, trying to get new token...");
+			accessToken = null;
+			return getToken().then(function () {
+				console.log("Retrying request...");
+				return sendRequest(method, path, mime, data);
+			});
+		} else {
+			return Promise.resolve(response).then(processResponseBody).then(checkForServerError);
+		}
+	});
+}
+
+function processResponseBody(response) {
+	return new Promise(function(resolve, reject) {
+		var responseMime;
+		if (response.headers['content-type']) {
+			responseMime = response.headers['content-type'].split(';')[0];
+		}
+
+		var responseBody;
+		switch (responseMime) {
+			case 'text/plain':
+				responseBody = response.body;
+				break;
+			case 'application/json':
+				try {
+					responseBody = JSON.parse(response.body);
+				} catch (e) {
+					reject('Could not read server response: ' + e.message);
+				}
+				break;
+			default:
+				responseBody = response.body;
+		}
+		
+		resolve({statusCode: response.statusCode, body: responseBody});
+	});
+}
+
+function checkForServerError(response) {
+	return new Promise(function (resolve, reject) {
+		if (response.statusCode >= 500) {
+			var errorMessage;
+			if (response.body.message) {
+				errorMessage = response.body.message;
+			} else if (response.body.type) {
+				errorMessage = response.body.type;
+			} else {
+				errorMessage = "HTTP error " + response.statusCode;
+			}
+			reject(new Error(errorMessage));
+		} else {
+			resolve(response);
+		}
 	});
 }
 
