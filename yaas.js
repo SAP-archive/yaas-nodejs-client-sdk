@@ -43,10 +43,9 @@ function notYetImplemented() {
 }
 
 module.exports = {
-	commitEvents: pubsub.commit,
-	getSalesorderDetails: order.getSalesorder,
 	init: init,
-	readPubSub: pubsub.read,
+	order: order,
+	pubsub: pubsub,
 	setDebug: setDebug,
 	setProjectId: setProjectId,
 	setVerbose: setVerbose
