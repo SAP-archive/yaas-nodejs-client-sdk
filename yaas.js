@@ -1,8 +1,5 @@
-var https = require('https');
-var querystring = require('querystring');
+var requestHelper = require('./yaas-requesthelper.js');
 
-var yaasHost = 'api.yaas.io';
-var pathToken = '/hybris/oauth2/b1/token';
 var pathCartBase;
 var pathCheckout;
 var pathCustomerBase;
@@ -15,20 +12,9 @@ var pathSiteBase;
 
 var debug = false;
 var verbose = false;
-var clientId, clientSecret, projectId, scope;
-var accessToken;
 
 exports.init = function (theClientId, theClientSecret, theScope) {
-	return new Promise(function (resolve, reject) {
-		if (!theClientId || !theClientSecret || !theScope) {
-			reject(new Error("Client ID, Client Secret and Scope have to be set!"));
-		} else {
-			clientId = theClientId;
-			clientSecret = theClientSecret;
-			scope = theScope;
-			resolve();
-		}
-	}).then(getToken);
+	return requestHelper.begin(theClientId, theClientSecret, theScope);
 };
 
 exports.setProjectId = function (value) {
@@ -51,156 +37,6 @@ exports.setVerbose = function (state) {
 	verbose = state;
 }
 
-function getToken() {
-	return sendPostRequest(
-		pathToken,
-		'application/x-www-form-urlencoded',
-		querystring.stringify({
-			'grant_type' : 'client_credentials',
-			'scope' : scope,
-			'client_id' : clientId,
-			'client_secret' : clientSecret
-		})
-	).then(function (response) {
-		if (response.statusCode == 200) {
-			accessToken = response.body.access_token;
-			if (debug) {
-				console.log('Received access token: ' + accessToken);
-				console.log("Granted scopes: " + response.body.scope);
-			}
-			return Promise.resolve();
-		} else {
-			console.error("Could not obtain token!");
-			console.error(JSON.stringify(response.body));
-			return Promise.reject();
-		}
-	});
-}
-
-function sendRequest(method, path, mime, data) {
-	return new Promise(function (resolve, reject) {
-		var headers = {};
-		
-		if (mime != null) {
-			headers['Content-Type'] = mime;
-		}
-	
-		if (accessToken != null) {
-			headers['Authorization'] = 'Bearer ' + accessToken;
-		}
-	
-		var options = {
-			hostname: yaasHost,
-			port: 443,
-			path: path,
-			method: method,
-			headers: headers
-		};
-		
-		if (debug) {console.log("Sending request to", yaasHost + path);}
-	
-		var req = https.request(options, function (res) {
-			res.setEncoding('utf8');
-			var data = "";
-
-			res.on('data', function (chunk) {
-				data += chunk;
-			});
-
-			res.on('end', function() {
-				if (debug) {
-					console.log('Status code: ' + res.statusCode);
-					console.log('Headers: ' + JSON.stringify(res.headers));
-					console.log('Body: ' + data);
-				}
-				
-				resolve({statusCode: res.statusCode, headers: res.headers, body: data});
-			});
-		});
-	
-		req.on('error', function(e) {
-			reject('problem with request: ' + e.message);
-		});
-
-		if (data && (method == 'POST' || method == 'PUT')) {
-			if (debug) {
-				console.log('Sending data: ' + data);
-			}
-			req.write(data);
-		}
-		req.end();
-	})
-	.then(function (response) {
-		// Check for authorization errors
-		if (response.statusCode == 401) {
-			console.log("Unauthorized, trying to get new token...");
-			accessToken = null;
-			return getToken().then(function () {
-				console.log("Retrying request...");
-				return sendRequest(method, path, mime, data);
-			});
-		} else {
-			return Promise.resolve(response)
-			.then(processResponseBody)
-			.then(checkForServerError);
-		}
-	});
-}
-
-function processResponseBody(response) {
-	return new Promise(function(resolve, reject) {
-		var responseMime;
-		if (response.headers['content-type']) {
-			responseMime = response.headers['content-type'].split(';')[0];
-		}
-
-		var responseBody;
-		switch (responseMime) {
-			case 'text/plain':
-				responseBody = response.body;
-				break;
-			case 'application/json':
-				try {
-					responseBody = JSON.parse(response.body);
-				} catch (e) {
-					reject('Could not read server response: ' + e.message);
-				}
-				break;
-			default:
-				responseBody = response.body;
-		}
-		
-		resolve({statusCode: response.statusCode, body: responseBody});
-	});
-}
-
-function checkForServerError(response) {
-	return new Promise(function (resolve, reject) {
-		if (response.statusCode >= 500) {
-			var errorMessage;
-			if (response.body.message) {
-				errorMessage = response.body.message;
-			} else if (response.body.type) {
-				errorMessage = response.body.type;
-			} else {
-				errorMessage = "HTTP error " + response.statusCode;
-			}
-			reject(new Error(errorMessage));
-		} else {
-			resolve(response);
-		}
-	});
-}
-
-function sendGetRequest(path, params) {
-	var pathWithParams = path + (params.length > 0 ? '?' + querystring.stringify(params) : '');
-	return sendRequest('GET', pathWithParams, null, {});
-}
-
-function sendPostRequest(path, mime, postData) {
-	return sendRequest('POST', path, mime, postData);
-}
-
 /**
  * Convert PubSub event payloads into proper nested JSON
  */
@@ -221,12 +57,12 @@ function fixEventPayload(events) {
 exports.commitEvents = function (topicOwnerClient, eventType, token) {
 	if (verbose) {console.log("Committing events...");}
 	
-	return sendPostRequest(
+	return requestHelper.post(
 		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/commit',
 		'application/json',
-		JSON.stringify({
-			"token": token
-		})
+		{
+			token: token
+		}
 	).then(function (response) {
 		if (response.statusCode == 200) {
 			if (verbose) {
@@ -244,14 +80,14 @@ exports.commitEvents = function (topicOwnerClient, eventType, token) {
 }
 
 exports.readPubSub = function (topicOwnerClient, eventType, numEvents) {
-	return sendPostRequest(
+	return requestHelper.post(
 		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/read',
 		'application/json',
-		JSON.stringify({
-			"numEvents": numEvents,
-			"ttlMs": 4000,
-			"autoCommit": false
-		})
+		{
+			numEvents: numEvents,
+			ttlMs: 4000,
+			autoCommit: false
+		}
 	).then(function (response) {
 		if (response.statusCode == 204) {
 			if (verbose) {
@@ -273,7 +109,7 @@ exports.readPubSub = function (topicOwnerClient, eventType, numEvents) {
 
 exports.getSalesorderDetails = function (orderId) {
 	if (verbose) {console.log("Getting salesorder details for order %s...", orderId);}
-	return sendGetRequest(pathOrderBase + '/salesorders/' + orderId, {}).then(function (response) {
+	return requestHelper.get(pathOrderBase + '/salesorders/' + orderId, {}).then(function (response) {
 		if (response.statusCode == 200) {
 			return Promise.resolve(response.body);
 		} else {
@@ -285,4 +121,3 @@ exports.getSalesorderDetails = function (orderId) {
 		}
 	});
 }
-
