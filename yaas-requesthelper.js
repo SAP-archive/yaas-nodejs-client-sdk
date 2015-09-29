@@ -136,7 +136,7 @@ function sendRequest(method, path, mime, data) {
 		if (response.statusCode == 401) {
 			console.log("Unauthorized, trying to get new token...");
 			accessToken = null;
-			return getToken().then(function () {
+			return yaasOauth.getToken().then(function () {
 				console.log("Retrying request...");
 				return sendRequest(method, path, mime, data);
 			});

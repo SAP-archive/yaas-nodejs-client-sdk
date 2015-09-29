@@ -37,5 +37,6 @@ function getToken() {
 }
 
 module.exports = {
-	begin: begin
+	begin: begin,
+	getToken: getToken
 };
