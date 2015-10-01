@@ -7,13 +7,7 @@ function init(rh, projectId) {
 }
 
 function getSalesorderDetails(orderId) {
-	return requestHelper.get(pathOrderBase + '/salesorders/' + orderId, {}).then(function (response) {
-		if (response.statusCode == 200) {
-			return Promise.resolve(response.body);
-		} else {
-			return Promise.reject(new Error("Problem: " + JSON.stringify(response.body)));
-		}
-	});
+	return requestHelper.get(pathOrderBase + '/salesorders/' + orderId, {});
 }
 
 module.exports = {

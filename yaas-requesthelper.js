@@ -13,6 +13,7 @@ function begin(theClientId, theClientSecret, theScope) {
 	return yaasOauth.begin(this, theClientId, theClientSecret, theScope).then(function(response) {
 		accessToken = response.access_token;
 		grantedScope = response.scope;
+		return Promise.resolve();
 	});
 };
 
@@ -28,6 +29,8 @@ function checkForServerError(response) {
 				errorMessage = "HTTP error " + response.statusCode;
 			}
 			reject(new Error(errorMessage));
+		} else if (response.statusCode >= 400) {
+			reject(response);
 		} else {
 			resolve(response);
 		}
@@ -157,5 +160,6 @@ module.exports = {
 	delete: sendDeleteRequest,
 	get: sendGetRequest,
 	post: sendPostRequest,
-	put: sendPutRequest
+	put: sendPutRequest,
+	unexpectedResponseCode: unexpectedResponseCode
 };
