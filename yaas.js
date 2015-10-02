@@ -1,5 +1,6 @@
 var requestHelper = require('./yaas-requesthelper.js');
 var cart = require('./yaas-cart.js');
+var checkout = require('./yaas-checkout.js');
 var customer = require('./yaas-customer.js');
 var order = require('./yaas-order.js');
 var price = require('./yaas-price.js');
@@ -13,6 +14,7 @@ var verbose = false;
 function init(theClientId, theClientSecret, theScope, theProjectId) {
 	return requestHelper.begin(theClientId, theClientSecret, theScope).then(function() {
 		cart.init(requestHelper, theProjectId);
+		checkout.init(requestHelper, theProjectId);
 		customer.init(requestHelper, theProjectId);
 		order.init(requestHelper, theProjectId);
 		price.init(requestHelper, theProjectId);
@@ -37,6 +39,7 @@ function notYetImplemented() {
 
 module.exports = {
 	cart: cart,
+	checkout: checkout,
 	customer: customer,
 	init: init,
 	order: order,

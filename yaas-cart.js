@@ -26,7 +26,20 @@ function getByCriteria(queryParameters) {
 	return requestHelper.get(pathCartBase, queryParameters);
 }
 
+function addProduct(cartId, product, quantity, price) {
+	return requestHelper.post(
+		 pathCartBase + '/' + cartId + '/items',
+		'application/json',
+		{
+			price: price,
+			quantity: quantity,
+			product: product
+		}
+	);
+}
+
 module.exports = {
+	addProduct: addProduct,
 	create: create,
 	delete: deleteCart,
 	getByCriteria: getByCriteria,

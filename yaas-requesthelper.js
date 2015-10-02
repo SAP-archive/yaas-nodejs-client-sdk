@@ -80,7 +80,8 @@ function sendDeleteRequest(path) {
 }
 
 function sendGetRequest(path, params) {
-	var pathWithParams = path + (params.length > 0 ? '?' + querystring.stringify(params) : '');
+	var queryParamString = querystring.stringify(params);
+	var pathWithParams = path + (queryParamString.length > 0 ? '?' + queryParamString : '');
 	return sendRequest('GET', pathWithParams, null, {});
 }
 
