@@ -11,9 +11,11 @@ This module makes use of JavaScript features that are still considered experimen
 You can include this module as a Git submodule into your project. 
 
 Include the module like this in your node.js code (assuming the submodule folder is called `yaas.js`):
+
 	var yaas = require('./yaas.js/yaas.js');
 
 The various CaaS services are used for namespacing like
+
 	yaas.product.getProduct(theProductId)
 	yaas.cart.deleteCart(cartId)
 	...
