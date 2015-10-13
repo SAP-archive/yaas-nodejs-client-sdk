@@ -19,7 +19,7 @@ function create(customerNumber, currency, siteCode) {
 }
 
 function deleteCart(cartId) {
-	return sendDeleteRequest(pathCartBase + '/' + cartId);
+	return requestHelper.delete(pathCartBase + '/' + cartId);
 }
 
 function getByCriteria(queryParameters) {

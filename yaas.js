@@ -23,7 +23,7 @@ function init(theClientId, theClientSecret, theScope, theProjectId) {
 		site.init(requestHelper, theProjectId);
 		return Promise.resolve();
 	});
-};
+}
 
 function setDebug(state) {
 	debug = state;
