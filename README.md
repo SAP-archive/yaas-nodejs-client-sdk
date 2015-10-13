@@ -14,6 +14,18 @@ Include the module like this in your node.js code (assuming the submodule folder
 
 	var yaas = require('./yaas.js/yaas.js');
 
+Then initialize the YaaS module
+
+	yaas.init(clientId, clientSecret, scopes, projectId)
+	.then(function(response) {
+		// init successful
+	}, function(reason) {
+		// init not successful
+	});
+
+On successful initialization your credentials seem valid and the module was able to obtain an authentication token.
+You do not need to worry about this token, as it is handled internally and refreshed automatically.
+
 The various CaaS services are used for namespacing like
 
 	yaas.product.getProduct(theProductId)
@@ -26,4 +38,5 @@ The various CaaS services are used for namespacing like
 * Structure of returned object used for *all* functions
 * Better namespacing / avoid duplicate naming in function calls (e.g. yaas.cart.deleteCart() becomes yaas.cart.delete())
 * Development principles (git-flow, branches, Pull Requests, unit tests, ...)
-* Release on GitHub
+* Release on GitHub ([Outbound Open Source Process](https://jam4.sapjam.com/wiki/show/vb27mpl0YCRPfHD8rEs7fo?_lightbox=true))
+* License (e.g. [MIT](http://choosealicense.com/licenses/mit/), [ISC](http://choosealicense.com/licenses/isc/))
