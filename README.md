@@ -38,4 +38,5 @@ The various CaaS services are used for namespacing like
 * Structure of returned object used for *all* functions
 * Better namespacing / avoid duplicate naming in function calls (e.g. yaas.cart.deleteCart() becomes yaas.cart.delete())
 * Development principles (git-flow, branches, Pull Requests, unit tests, ...)
-* Release on GitHub
+* Release on GitHub ([Outbound Open Source Process](https://jam4.sapjam.com/wiki/show/vb27mpl0YCRPfHD8rEs7fo?_lightbox=true))
+* License (e.g. [MIT](http://choosealicense.com/licenses/mit/), [ISC](http://choosealicense.com/licenses/isc/))
