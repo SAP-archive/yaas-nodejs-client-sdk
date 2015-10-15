@@ -12,6 +12,12 @@ Install the module via `npm`
 
 	npm install git+ssh://git@enterprise-stash.hybris.com:7999/labs/yaas.js.git#v0.1.1 --save
 
+or add
+
+	"yaas.js": "git+ssh://git@enterprise-stash.hybris.com:7999/labs/yaas.js.git#v0.1.1"
+
+to your `package.json`.
+
 Include the module like this in your node.js code
 
 	var yaas = require('yaas.js');
