@@ -8,13 +8,15 @@ This node.js module simplifys the access to the YaaS REST API. It handles authen
 This module makes use of JavaScript features that are still considered experimental (i.e. [Promises](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Promise)). You therefore need a more recent version of node.js that supports ECMAScript 6 (Harmony).
 
 ### Usage
-You can include this module as a Git submodule into your project. 
+Install the module via `npm`
 
-Include the module like this in your node.js code (assuming the submodule folder is called `yaas.js`):
+	npm install git+ssh://git@enterprise-stash.hybris.com:7999/labs/yaas.js.git#v0.1.1 --save
 
-	var yaas = require('./yaas.js/yaas.js');
+Include the module like this in your node.js code
 
-Then initialize the YaaS module
+	var yaas = require('yaas.js');
+
+Then initialize the module
 
 	yaas.init(clientId, clientSecret, scopes, projectId)
 	.then(function(response) {
@@ -40,3 +42,11 @@ The various CaaS services are used for namespacing like
 * Development principles (git-flow, branches, Pull Requests, unit tests, ...)
 * Release on GitHub ([Outbound Open Source Process](https://jam4.sapjam.com/wiki/show/vb27mpl0YCRPfHD8rEs7fo?_lightbox=true))
 * License (e.g. [MIT](http://choosealicense.com/licenses/mit/), [ISC](http://choosealicense.com/licenses/isc/))
+
+### Release Notes
+
+#### 0.1.1
+* Auto-refreshed token was not saved
+
+#### 0.1.0
+* Initial version
