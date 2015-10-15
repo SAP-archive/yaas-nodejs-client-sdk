@@ -10,7 +10,7 @@ This module makes use of JavaScript features that are still considered experimen
 ### Usage
 Install the module via `npm`
 
-	npm install git+ssh://git@enterprise-stash.hybris.com:7999/labs/yaas.js.git --save
+	npm install git+ssh://git@enterprise-stash.hybris.com:7999/labs/yaas.js.git#v0.1.1 --save
 
 Include the module like this in your node.js code
 
@@ -42,3 +42,11 @@ The various CaaS services are used for namespacing like
 * Development principles (git-flow, branches, Pull Requests, unit tests, ...)
 * Release on GitHub ([Outbound Open Source Process](https://jam4.sapjam.com/wiki/show/vb27mpl0YCRPfHD8rEs7fo?_lightbox=true))
 * License (e.g. [MIT](http://choosealicense.com/licenses/mit/), [ISC](http://choosealicense.com/licenses/isc/))
+
+### Release Notes
+
+#### 0.1.1
+* Auto-refreshed token was not saved
+
+#### 0.1.0
+* Initial version
