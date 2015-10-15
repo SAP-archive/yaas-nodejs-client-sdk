@@ -135,6 +135,14 @@ function sendRequest(method, path, mime, data) {
 			reject('problem with request: ' + e.message);
 		});
 
+		req.on('socket', function (socket) {
+			socket.setTimeout(30000);
+			socket.on('timeout', function() {
+				console.log('Connection timed out!');
+				req.abort();
+			});
+		});
+
 		if (data && (method == 'POST' || method == 'PUT')) {
 			req.write(data);
 		}
