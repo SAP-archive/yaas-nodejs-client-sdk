@@ -10,12 +10,17 @@ var accessToken;
 var grantedScope;
 
 function begin(theClientId, theClientSecret, theScope) {
-	return yaasOauth.begin(this, theClientId, theClientSecret, theScope).then(function(response) {
+	return yaasOauth.begin(this, theClientId, theClientSecret, theScope).then(saveToken);
+};
+
+function saveToken(response) {
+	return new Promise(function (resolve, reject) {
 		accessToken = response.access_token;
 		grantedScope = response.scope;
-		return Promise.resolve();
+		console.log('Got new token:', accessToken);
+		resolve();
 	});
-};
+}
 
 function checkForServerError(response) {
 	return new Promise(function (resolve, reject) {
@@ -140,9 +145,7 @@ function sendRequest(method, path, mime, data) {
 		if (response.statusCode == 401) {
 			console.log("Unauthorized, trying to get new token...");
 			accessToken = null;
-			return yaasOauth.getToken().then(function (response) {
-				accessToken = response.access_token;
-				grantedScope = response.scope;
+			return yaasOauth.getToken().then(saveToken).then(function() {
 				console.log("Retrying request...");
 				return sendRequest(method, path, mime, data);
 			});
