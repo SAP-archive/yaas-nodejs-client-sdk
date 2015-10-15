@@ -16,7 +16,7 @@ or add
 
 	"yaas.js": "git+ssh://git@enterprise-stash.hybris.com:7999/labs/yaas.js.git#v0.1.1"
 
-to your `package.json`.
+to your `package.json`. If you want or need to work with the latest development version, end the git URL with `#develop` instead of the version number.
 
 Include the module like this in your node.js code
 
