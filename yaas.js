@@ -48,5 +48,9 @@ module.exports = {
 	pubsub: pubsub,
 	setDebug: setDebug,
 	setVerbose: setVerbose,
-	site: site
+	site: site,
+	deleteRequest: requestHelper.delete,
+	getRequest: requestHelper.get,
+	postRequest: requestHelper.post,
+	putRequest: requestHelper.put
 };
