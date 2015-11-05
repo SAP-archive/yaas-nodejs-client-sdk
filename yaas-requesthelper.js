@@ -140,6 +140,7 @@ function sendRequest(method, path, mime, data) {
 			socket.on('timeout', function() {
 				console.log('Connection timed out!');
 				req.abort();
+				reject('Timeout during request: ' + path);
 			});
 		});
 
