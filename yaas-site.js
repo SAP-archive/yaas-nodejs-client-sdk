@@ -3,7 +3,7 @@ var pathSiteBase;
 
 function init(rh, projectId) {
 	requestHelper = rh;
-	pathSiteBase = '/hybris/site/b1/' + projectId + '/sites';
+	pathSiteBase = '/hybris/site/v1/' + projectId + '/sites';
 }
 
 function get(siteCode) {

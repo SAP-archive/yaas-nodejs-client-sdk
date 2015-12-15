@@ -1,4 +1,4 @@
-var pathToken = '/hybris/oauth2/b1/token';
+var pathToken = '/hybris/oauth2/v1/token';
 
 var requestHelper;
 var clientId, clientSecret, scope;

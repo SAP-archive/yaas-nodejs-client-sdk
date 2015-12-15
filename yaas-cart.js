@@ -3,7 +3,7 @@ var pathCartBase;
 
 function init(rh, projectId) {
 	requestHelper = rh;
-	pathCartBase = '/hybris/cart/b1/' + projectId + '/carts';
+	pathCartBase = '/hybris/cart/v1/' + projectId + '/carts';
 }
 
 function create(customerNumber, currency, siteCode) {

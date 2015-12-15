@@ -3,7 +3,7 @@ var requestHelper;
 
 function init(rh, projectId) {
 	requestHelper = rh;
-	pathOrderBase = '/hybris/order/b1/' + projectId;
+	pathOrderBase = '/hybris/order/v1/' + projectId;
 	pathSalesorderBase = pathOrderBase + '/salesorders';
 }
 

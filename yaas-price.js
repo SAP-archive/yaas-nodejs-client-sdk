@@ -3,7 +3,7 @@ var pathPriceBase;
 
 function init(rh, projectId) {
 	requestHelper = rh;
-	pathPriceBase = '/hybris/price/b1/' + projectId + '/prices';
+	pathPriceBase = '/hybris/price/v1/' + projectId + '/prices';
 }
 
 function getPrices(queryParameters) {

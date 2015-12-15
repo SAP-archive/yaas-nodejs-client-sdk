@@ -3,7 +3,7 @@ var pathProductBase;
 
 function init(rh, projectId) {
 	requestHelper = rh;
-	pathProductBase = '/hybris/product/b1/' + projectId + '/products';
+	pathProductBase = '/hybris/product/v1/' + projectId + '/products';
 }
 
 function getProduct(productId, fields) {

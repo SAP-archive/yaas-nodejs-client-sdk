@@ -1,4 +1,4 @@
-var pathPubSubBase = '/hybris/pubsub/b2/topics';
+var pathPubSubBase = '/hybris/pubsub/v1/topics';
 
 var requestHelper;
 
