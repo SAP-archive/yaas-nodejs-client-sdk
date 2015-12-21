@@ -40,14 +40,14 @@ function fixEventPayload(events) {
 	});
 }
 
-function read(topicOwnerClient, eventType, numEvents) {
+function read(topicOwnerClient, eventType, numEvents, autoCommit) {
 	return requestHelper.post(
 		pathPubSubBase + '/' + topicOwnerClient + '/' + eventType + '/read',
 		'application/json',
 		{
 			numEvents: numEvents,
 			ttlMs: 4000,
-			autoCommit: false
+			autoCommit: autoCommit || false
 		}
 	).then(function (response) {
 		if (response.statusCode == 204) {
