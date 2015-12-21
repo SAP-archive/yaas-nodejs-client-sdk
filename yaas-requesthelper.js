@@ -10,6 +10,7 @@ var accessToken;
 var grantedScope;
 
 function begin(theClientId, theClientSecret, theScope) {
+  accessToken = null;
 	return yaasOauth.begin(this, theClientId, theClientSecret, theScope).then(saveToken);
 };
 
