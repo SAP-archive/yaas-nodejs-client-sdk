@@ -181,9 +181,7 @@ function unexpectedResponseCode(statusCode) {
  * @returns string
  */
 function preparePath(path) {
-    console.log("Path before:", path);
     var preparedPath = path.replace("{{projectId}}", projectId);
-    console.log("Prepared path:", preparedPath);
     return preparedPath;
 }
 
