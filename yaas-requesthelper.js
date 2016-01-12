@@ -8,9 +8,11 @@ var yaasHost = 'api.yaas.io';
 /* Variables */
 var accessToken;
 var grantedScope;
+var projectId;
 
-function begin(theClientId, theClientSecret, theScope) {
+function begin(theClientId, theClientSecret, theScope, theProjectId) {
     accessToken = null;
+    projectId = theProjectId;
 	return yaasOauth.begin(this, theClientId, theClientSecret, theScope).then(saveToken);
 }
 
@@ -110,6 +112,8 @@ function sendRequest(method, path, mime, data) {
 		if (accessToken != null) {
 			headers['Authorization'] = 'Bearer ' + accessToken;
 		}
+
+        path = preparePath(path);
 	
 		var options = {
 			hostname: yaasHost,
@@ -169,6 +173,18 @@ function sendRequest(method, path, mime, data) {
 
 function unexpectedResponseCode(statusCode) {
 	return Promise.reject(new Error("Unexpected HTTP status code " + statusCode));
+}
+
+/**
+ * Fills the placeholders within path
+ * @param path A URL with placeholders
+ * @returns string
+ */
+function preparePath(path) {
+    console.log("Path before:", path);
+    var preparedPath = path.replace("{{projectId}}", projectId);
+    console.log("Prepared path:", preparedPath);
+    return preparedPath;
 }
 
 module.exports = {

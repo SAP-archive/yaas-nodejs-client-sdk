@@ -1,9 +1,8 @@
 var requestHelper;
-var pathCheckout;
+var pathCheckout = '/hybris/checkout/v1/{{projectId}}/checkouts';
 
-function init(rh, projectId) {
+function init(rh) {
 	requestHelper = rh;
-	pathCheckout = '/hybris/checkout/v1/' + projectId + '/checkouts';
 }
 
 function checkout(data) {

@@ -1,9 +1,8 @@
 var requestHelper;
-var pathCustomerBase;
+var pathCustomerBase = '/hybris/customer/v1/{{projectId}}/customers';;
 
-function init(rh, projectId) {
+function init(rh) {
 	requestHelper = rh;
-	pathCustomerBase = '/hybris/customer/v1/' + projectId + '/customers';
 }
 
 function getCustomer(customerNumber) {

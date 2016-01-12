@@ -1,9 +1,8 @@
 var requestHelper;
-var pathCartBase;
+var pathCartBase = '/hybris/cart/v1/{{projectId}}/carts';
 
-function init(rh, projectId) {
+function init(rh) {
 	requestHelper = rh;
-	pathCartBase = '/hybris/cart/v1/' + projectId + '/carts';
 }
 
 function create(customerNumber, currency, siteCode) {

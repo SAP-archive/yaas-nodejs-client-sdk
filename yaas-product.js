@@ -1,9 +1,8 @@
 var requestHelper;
-var pathProductBase;
+var pathProductBase = '/hybris/product/v1/{{projectId}}/products';
 
-function init(rh, projectId) {
+function init(rh) {
 	requestHelper = rh;
-	pathProductBase = '/hybris/product/v1/' + projectId + '/products';
 }
 
 function getProduct(productId, fields) {

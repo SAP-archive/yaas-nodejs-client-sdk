@@ -1,10 +1,9 @@
-var pathOrderBase;
+var pathOrderBase = '/hybris/order/v1/{{projectId}}';
+var pathSalesorderBase = pathOrderBase + '/salesorders';
 var requestHelper;
 
-function init(rh, projectId) {
+function init(rh) {
 	requestHelper = rh;
-	pathOrderBase = '/hybris/order/v1/' + projectId;
-	pathSalesorderBase = pathOrderBase + '/salesorders';
 }
 
 function addShipmentToSalesorder(orderId, data) {

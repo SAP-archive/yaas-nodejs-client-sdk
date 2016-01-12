@@ -1,9 +1,8 @@
 var requestHelper;
-var pathPriceBase;
+var pathPriceBase = '/hybris/price/v1/{{projectId}}/prices';
 
-function init(rh, projectId) {
+function init(rh) {
 	requestHelper = rh;
-	pathPriceBase = '/hybris/price/v1/' + projectId + '/prices';
 }
 
 function getPrices(queryParameters) {

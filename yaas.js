@@ -12,15 +12,15 @@ var debug = false;
 var verbose = false;
 
 function init(theClientId, theClientSecret, theScope, theProjectId) {
-	return requestHelper.begin(theClientId, theClientSecret, theScope).then(function() {
-		cart.init(requestHelper, theProjectId);
-		checkout.init(requestHelper, theProjectId);
-		customer.init(requestHelper, theProjectId);
-		order.init(requestHelper, theProjectId);
-		price.init(requestHelper, theProjectId);
-		product.init(requestHelper, theProjectId);
+	return requestHelper.begin(theClientId, theClientSecret, theScope, theProjectId).then(function() {
+		cart.init(requestHelper);
+		checkout.init(requestHelper);
+		customer.init(requestHelper);
+		order.init(requestHelper);
+		price.init(requestHelper);
+		product.init(requestHelper);
 		pubsub.init(requestHelper);
-		site.init(requestHelper, theProjectId);
+		site.init(requestHelper);
 		return Promise.resolve();
 	});
 }
