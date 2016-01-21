@@ -116,6 +116,7 @@ function sendRequest(method, path, mime, data) {
 		}
 
         path = preparePath(path);
+        if (debug) { console.log(method, path); }
 	
 		var options = {
 			hostname: yaasHost,
