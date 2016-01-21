@@ -8,9 +8,6 @@ var product = require('./yaas-product.js');
 var pubsub = require('./yaas-pubsub.js');
 var site = require('./yaas-site.js');
 
-var debug = false;
-var verbose = false;
-
 function init(theClientId, theClientSecret, theScope, theProjectId) {
 	return requestHelper.begin(theClientId, theClientSecret, theScope, theProjectId).then(function() {
 		cart.init(requestHelper);
@@ -26,11 +23,11 @@ function init(theClientId, theClientSecret, theScope, theProjectId) {
 }
 
 function setDebug(state) {
-	debug = state;
+	requestHelper.setDebug(state);
 }
 
 function setVerbose(state) {
-	verbose = state;
+	requestHelper.setVerbose(state);
 }
 
 function notYetImplemented() {

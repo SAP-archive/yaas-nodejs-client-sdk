@@ -9,6 +9,8 @@ var yaasHost = 'api.yaas.io';
 var accessToken;
 var grantedScope;
 var projectId;
+var debug = false;
+var verbose = false;
 
 function begin(theClientId, theClientSecret, theScope, theProjectId) {
     accessToken = null;
@@ -20,7 +22,7 @@ function saveToken(response) {
 	return new Promise(function (resolve, reject) {
 		accessToken = response.access_token;
 		grantedScope = response.scope;
-		console.log('Got new token:', accessToken);
+		if (verbose) { console.log('Got new token:', accessToken); }
 		resolve();
 	});
 }
@@ -150,17 +152,20 @@ function sendRequest(method, path, mime, data) {
 		});
 
 		if (data && (method == 'POST' || method == 'PUT')) {
+			if (debug) { console.log("Sending data:", data); }
 			req.write(data);
 		}
 		req.end();
 	})
 	.then(function (response) {
+		if (debug) { console.log(response); }
+
 		// Check for authorization errors
 		if (response.statusCode == 401) {
-			console.log("Unauthorized, trying to get new token...");
+			if (verbose) { console.log("Unauthorized, trying to get new token..."); }
 			accessToken = null;
 			return yaasOauth.getToken().then(saveToken).then(function() {
-				console.log("Retrying request...");
+				if (verbose) { console.log("Retrying request..."); }
 				return sendRequest(method, path, mime, data);
 			});
 		} else {
@@ -181,8 +186,15 @@ function unexpectedResponseCode(statusCode) {
  * @returns string
  */
 function preparePath(path) {
-    var preparedPath = path.replace("{{projectId}}", projectId);
-    return preparedPath;
+	return path.replace("{{projectId}}", projectId);
+}
+
+function setDebug(state) {
+	debug = state;
+}
+
+function setVerbose(state) {
+	verbose = state;
 }
 
 module.exports = {
@@ -191,5 +203,7 @@ module.exports = {
 	get: sendGetRequest,
 	post: sendPostRequest,
 	put: sendPutRequest,
+	setDebug: setDebug,
+	setVerbose: setVerbose,
 	unexpectedResponseCode: unexpectedResponseCode
 };
