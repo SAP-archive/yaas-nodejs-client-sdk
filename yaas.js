@@ -1,4 +1,4 @@
-var requestHelper = require('./yaas-requesthelper.js');
+var RequestHelper = require('./yaas-requesthelper.js');
 var cart = require('./yaas-cart.js');
 var checkout = require('./yaas-checkout.js');
 var customer = require('./yaas-customer.js');
@@ -7,19 +7,19 @@ var price = require('./yaas-price.js');
 var product = require('./yaas-product.js');
 var pubsub = require('./yaas-pubsub.js');
 var site = require('./yaas-site.js');
+var requestHelper;
 
 function init(theClientId, theClientSecret, theScope, theProjectId) {
-	return requestHelper.begin(theClientId, theClientSecret, theScope, theProjectId).then(function() {
-		cart.init(requestHelper);
-		checkout.init(requestHelper);
-		customer.init(requestHelper);
-		order.init(requestHelper);
-		price.init(requestHelper);
-		product.init(requestHelper);
-		pubsub.init(requestHelper);
-		site.init(requestHelper);
-		return Promise.resolve();
-	});
+  requestHelper = new RequestHelper(theClientId, theClientSecret, theScope, theProjectId);
+	cart.init(requestHelper);
+	checkout.init(requestHelper);
+	customer.init(requestHelper);
+	order.init(requestHelper);
+	price.init(requestHelper);
+	product.init(requestHelper);
+	pubsub.init(requestHelper);
+	site.init(requestHelper);
+	return Promise.resolve();
 }
 
 function setDebug(state) {
@@ -27,7 +27,7 @@ function setDebug(state) {
 }
 
 function setVerbose(state) {
-	requestHelper.setVerbose(state);
+//	requestHelper.setVerbose(state);
 }
 
 function notYetImplemented() {
@@ -45,9 +45,5 @@ module.exports = {
 	pubsub: pubsub,
 	setDebug: setDebug,
 	setVerbose: setVerbose,
-	site: site,
-	deleteRequest: requestHelper.delete,
-	getRequest: requestHelper.get,
-	postRequest: requestHelper.post,
-	putRequest: requestHelper.put
+	site: site
 };

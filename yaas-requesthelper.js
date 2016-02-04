@@ -2,209 +2,197 @@ var https = require('https');
 var querystring = require('querystring');
 var yaasOauth = require('./yaas-oauth.js');
 
-/* Constants */
-var yaasHost = 'api.yaas.io';
+var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectId) {
+    /* Constants */
+    this.yaasHost = 'api.yaas.io';
+    this.oauthTokenPath = '/hybris/oauth2/v1/token';
 
-/* Variables */
-var accessToken;
-var grantedScope;
-var projectId;
-var debug = false;
-var verbose = false;
+    /* Variables */
+    this.clientId = theClientId;
+    this.clientSecret= theClientSecret;
+    this.scope = theScope;
+    this.projectId = theProjectId;
+    this.debug = false;
 
-function begin(theClientId, theClientSecret, theScope, theProjectId) {
-    accessToken = null;
-    projectId = theProjectId;
-	return yaasOauth.begin(this, theClientId, theClientSecret, theScope).then(saveToken);
-}
+    this.getToken = function() {
+        if(this.accessToken) {
+            return Promise.resolve(this.accessToken);
+        }
+        else {
+            var options = {
+                hostname: this.yaasHost,
+                port: 443,
+                path: this.oauthTokenPath,
+                method: 'POST',
+                headers: {'Content-Type' : 'application/x-www-form-urlencoded' }
+            };
+            var body = {
+                'grant_type' : 'client_credentials',
+                'scope' : this.scope,
+                'client_id' : this.clientId,
+                'client_secret' : this.clientSecret
+            };
+            return this.tryRequest(options, this.prepareData(body, 'application/x-www-form-urlencoded'))
+            .then(function (response) {
+                if (response.statusCode == 200) {
+                    this.accessToken = response.body.access_token;
+                    return Promise.resolve(this.accessToken);
+                } else {
+                    this.invalidateToken();
+                    return Promise.reject(new Error("Could not obtain token!" + JSON.stringify(response.body)));
+                }
+            }.bind(this))
+            .catch(function(e) {
+                this.invalidateToken();
+                return Promise.reject(e);
+            }.bind(this));
+        }
+    };
 
-function saveToken(response) {
-	return new Promise(function (resolve, reject) {
-		accessToken = response.access_token;
-		grantedScope = response.scope;
-		if (verbose) { console.log('Got new token:', accessToken); }
-		resolve();
-	});
-}
+    this.invalidateToken = function() {
+        this.accessToken = undefined;
+    };
 
-function checkForServerError(response) {
-	return new Promise(function (resolve, reject) {
-		if (response.statusCode >= 500) {
-			var errorMessage;
-			if (response.body.message) {
-				errorMessage = response.body.message;
-			} else if (response.body.type) {
-				errorMessage = response.body.type;
-			} else {
-				errorMessage = "HTTP error " + response.statusCode;
-			}
-			reject(new Error(errorMessage));
-		} else if (response.statusCode >= 400) {
-			reject(response);
-		} else {
-			resolve(response);
-		}
-	});
-}
+    this.tryRequest = function(options, body) {
+        return new Promise(function(resolve, reject) {
+            var req = https.request(options, function (res) {
+                res.setEncoding('utf8');
+                var data = "";
 
-function prepareData(data, mime) {
-	switch (mime) {
-		case 'application/x-www-form-urlencoded':
-			return querystring.stringify(data);
-		case 'application/json':
-			return JSON.stringify(data);
-		default:
-			return data;
-	}
-}
+                res.on('data', function (chunk) {
+                    data += chunk;
+                });
 
-function processResponseBody(response) {
-	return new Promise(function(resolve, reject) {
-		var responseMime;
-		if (response.headers['content-type']) {
-			responseMime = response.headers['content-type'].split(';')[0];
-		}
+                res.on('end', function() {
+                    this.processResponseBody({statusCode: res.statusCode, headers: res.headers, body: data})
+                    .then(resolve)
+                    .catch(reject);
+                }.bind(this));
+            }.bind(this));
+        
+            req.on('error', function(e) {
+                reject(e);
+            });
 
-		var responseBody;
-		switch (responseMime) {
-			case 'text/plain':
-				responseBody = response.body;
-				break;
-			case 'application/json':
-				try {
-					responseBody = JSON.parse(response.body);
-				} catch (e) {
-					reject('Could not read server response: ' + e.message);
-				}
-				break;
-			default:
-				responseBody = response.body;
-		}
-		
-		resolve({statusCode: response.statusCode, body: responseBody});
-	});
-}
+            if (body && (options.method == 'POST' || options.method == 'PUT')) {
+                if (this.debug) { console.log("Sending data:", body); }
+                console.log(body);
+                req.write(body);
+            }
+            req.end();
+        }.bind(this));
+    };
 
-function sendDeleteRequest(path) {
-	return sendRequest('DELETE', path, null, {});
-}
+    this.sendRequest = function(method, path, mime, data) {
 
-function sendGetRequest(path, params) {
-	var queryParamString = querystring.stringify(params);
-	var pathWithParams = path + (queryParamString.length > 0 ? '?' + queryParamString : '');
-	return sendRequest('GET', pathWithParams, null, {});
-}
+        var headers = {};
+        
+        if (mime) {
+            headers['Content-Type'] = mime;
+        }
 
-function sendPostRequest(path, mime, postData) {
-	return sendRequest('POST', path, mime, prepareData(postData, mime));
-}
+        path = this.preparePath(path);
+        if (this.debug) { console.log(method, path); }
+    
+        var options = {
+            hostname: this.yaasHost,
+            port: 443,
+            path: path,
+            method: method,
+            headers: headers
+        };
 
-function sendPutRequest(path, mime, putData) {
-	return sendRequest('PUT', path, mime, prepareData(putData, mime));
-}
+        return new Promise(function (resolve, reject) {
+            this.getToken()
+            .then(function(token){
+                options.headers.Authorization = 'Bearer ' + token;
+                return this.tryRequest(options, data);
+            }.bind(this))
+            .then(function(response) {
+                if(response.statusCode && response.statusCode == 401) {
+                    this.invalidateToken();
+                    this.getToken()
+                    .then(function(token){
+                        options.headers.Authorization = 'Bearer ' + token;
+                        this.tryRequest(options, data)
+                        .then(resolve)
+                        .catch(reject);
+                    }.bind(this))
+                    .catch(reject);
+                } else if (response.statusCode >= 400) {
+                    reject(response);
+                } else {
+                    resolve(response);
+                }
+            }.bind(this))
+            .catch(reject);
+        }.bind(this));
+    };
 
-function sendRequest(method, path, mime, data) {
-	return new Promise(function (resolve, reject) {
-		var headers = {};
-		
-		if (mime != null) {
-			headers['Content-Type'] = mime;
-		}
-	
-		if (accessToken != null) {
-			headers['Authorization'] = 'Bearer ' + accessToken;
-		}
+    this.delete = function(path) {
+        return this.sendRequest('DELETE', path, null, {});
+    };
 
-        path = preparePath(path);
-        if (debug) { console.log(method, path); }
-	
-		var options = {
-			hostname: yaasHost,
-			port: 443,
-			path: path,
-			method: method,
-			headers: headers
-		};
-	
-		var req = https.request(options, function (res) {
-			res.setEncoding('utf8');
-			var data = "";
+    this.get = function(path, params) {
+        var queryParamString = querystring.stringify(params);
+        var pathWithParams = path + (queryParamString.length > 0 ? '?' + queryParamString : '');
+        return this.sendRequest('GET', pathWithParams, null, {});
+    };
 
-			res.on('data', function (chunk) {
-				data += chunk;
-			});
+    this.post = function(path, mime, postData) {
+        return this.sendRequest('POST', path, mime, this.prepareData(postData, mime));
+    };
 
-			res.on('end', function() {
-				resolve({statusCode: res.statusCode, headers: res.headers, body: data});
-			});
-		});
-	
-		req.on('error', function(e) {
-			reject('problem with request: ' + e.message);
-		});
+    this.put = function(path, mime, putData) {
+        return this.sendRequest('PUT', path, mime, this.prepareData(putData, mime));
+    };
 
-		req.on('socket', function (socket) {
-			socket.setTimeout(30000);
-			socket.on('timeout', function() {
-				console.log('Connection timed out!');
-				req.abort();
-				reject('Timeout during request: ' + path);
-			});
-		});
+    this.prepareData = function(data, mime) {
+      switch (mime) {
+        case 'application/x-www-form-urlencoded':
+          return querystring.stringify(data);
+        case 'application/json':
+          return JSON.stringify(data);
+        default:
+          return data;
+      }
+    };
 
-		if (data && (method == 'POST' || method == 'PUT')) {
-			if (debug) { console.log("Sending data:", data); }
-			req.write(data);
-		}
-		req.end();
-	})
-	.then(function (response) {
-		if (debug) { console.log(response); }
+    this.processResponseBody = function(response) {
+      return new Promise(function(resolve, reject) {
+        var responseMime;
+        if (response.headers['content-type']) {
+          responseMime = response.headers['content-type'].split(';')[0];
+        }
 
-		// Check for authorization errors
-		if (response.statusCode == 401) {
-			if (verbose) { console.log("Unauthorized, trying to get new token..."); }
-			accessToken = null;
-			return yaasOauth.getToken().then(saveToken).then(function() {
-				if (verbose) { console.log("Retrying request..."); }
-				return sendRequest(method, path, mime, data);
-			});
-		} else {
-			return Promise.resolve(response)
-			.then(processResponseBody)
-			.then(checkForServerError);
-		}
-	});
-}
+        var responseBody;
+        switch (responseMime) {
+          case 'text/plain':
+            responseBody = response.body;
+            break;
+          case 'application/json':
+            try {
+              responseBody = JSON.parse(response.body);
+            } catch (e) {
+              reject('Could not read server response: ' + e.message);
+            }
+            break;
+          default:
+            responseBody = response.body;
+        }
+        
+        resolve({statusCode: response.statusCode, body: responseBody});
+      });
+    };
 
-function unexpectedResponseCode(statusCode) {
-	return Promise.reject(new Error("Unexpected HTTP status code " + statusCode));
-}
+    this.preparePath = function(path) {
+      return path.replace("{{projectId}}", this.projectId);
+    };
 
-/**
- * Fills the placeholders within path
- * @param path A URL with placeholders
- * @returns string
- */
-function preparePath(path) {
-	return path.replace("{{projectId}}", projectId);
-}
+    this.setDebug = function(state) {
+      this.debug = state;
+    };
 
-function setDebug(state) {
-	debug = state;
-}
-
-function setVerbose(state) {
-	verbose = state;
-}
-
-module.exports = {
-	begin: begin,
-	delete: sendDeleteRequest,
-	get: sendGetRequest,
-	post: sendPostRequest,
-	put: sendPutRequest,
-	setDebug: setDebug,
-	setVerbose: setVerbose,
-	unexpectedResponseCode: unexpectedResponseCode
 };
+
+module.exports = RequestHelper;
