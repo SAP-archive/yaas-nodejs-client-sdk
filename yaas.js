@@ -1,49 +1,26 @@
 var RequestHelper = require('./yaas-requesthelper.js');
-var cart = require('./yaas-cart.js');
-var checkout = require('./yaas-checkout.js');
-var customer = require('./yaas-customer.js');
-var order = require('./yaas-order.js');
-var price = require('./yaas-price.js');
-var product = require('./yaas-product.js');
-var pubsub = require('./yaas-pubsub.js');
-var site = require('./yaas-site.js');
-var requestHelper;
+var CartService = require('./yaas-cart.js');
+var CheckoutService = require('./yaas-checkout.js');
+var CustomerService = require('./yaas-customer.js');
+var OrderService = require('./yaas-order.js');
+var PriceService = require('./yaas-price.js');
+var ProductService = require('./yaas-product.js');
+var PubSubService = require('./yaas-pubsub.js');
+var SiteService = require('./yaas-site.js');
 
-function init(theClientId, theClientSecret, theScope, theProjectId) {
-    requestHelper = new RequestHelper(theClientId, theClientSecret, theScope, theProjectId);
-    cart.init(requestHelper);
-    checkout.init(requestHelper);
-    customer.init(requestHelper);
-    order.init(requestHelper);
-    price.init(requestHelper);
-    product.init(requestHelper);
-    pubsub.init(requestHelper);
-    site.init(requestHelper);
-    return Promise.resolve();
-}
-
-function setDebug(state) {
-    requestHelper.setDebug(state);
-}
-
-function setVerbose(state) {
-//	requestHelper.setVerbose(state);
-}
-
-function notYetImplemented() {
-    return Promise.reject(new Error("Method not yet implemented!"));
-}
-
-module.exports = {
-    cart: cart,
-    checkout: checkout,
-    customer: customer,
-    init: init,
-    order: order,
-    price: price,
-    product: product,
-    pubsub: pubsub,
-    setDebug: setDebug,
-    setVerbose: setVerbose,
-    site: site
+var Yaas = function() {
+    this.init = function(theClientId, theClientSecret, theScope, theProjectId) {
+        this.requestHelper = new RequestHelper(theClientId, theClientSecret, theScope, theProjectId);
+        this.cart = new CartService(this.requestHelper);
+        this.checkout = new CheckoutService(this.requestHelper);
+        this.customer = new CustomerService(this.requestHelper);
+        this.order = new OrderService(this.requestHelper);
+        this.price = new PriceService(this.requestHelper);
+        this.product = new ProductService(this.requestHelper);
+        this.pubsub = new PubSubService(this.requestHelper);
+        this.site = new SiteService(this.requestHelper);
+        return Promise.resolve();
+    };
 };
+
+module.exports = Yaas;
