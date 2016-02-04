@@ -1,6 +1,5 @@
 var https = require('https');
 var querystring = require('querystring');
-var yaasOauth = require('./yaas-oauth.js');
 
 var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectId) {
     /* Constants */
