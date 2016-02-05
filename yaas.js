@@ -7,6 +7,7 @@ var PriceService = require('./yaas-price.js');
 var ProductService = require('./yaas-product.js');
 var PubSubService = require('./yaas-pubsub.js');
 var SiteService = require('./yaas-site.js');
+var DocumentService = require('./yaas-document.js');
 
 var Yaas = function() {
     this.init = function(theClientId, theClientSecret, theScope, theProjectId) {
@@ -19,6 +20,7 @@ var Yaas = function() {
         this.product = new ProductService(this.requestHelper);
         this.pubsub = new PubSubService(this.requestHelper);
         this.site = new SiteService(this.requestHelper);
+        this.document = new DocumentService(this.requestHelper);
         return Promise.resolve();
     };
 };
