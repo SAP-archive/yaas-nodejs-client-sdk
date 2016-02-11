@@ -75,7 +75,6 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
 
             if (body && (options.method == 'POST' || options.method == 'PUT')) {
                 if (this.debug) { console.log("Sending data:", body); }
-                console.log(body);
                 req.write(body);
             }
             req.end();
