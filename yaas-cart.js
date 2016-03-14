@@ -41,7 +41,7 @@ var Cart = function(rh) {
       'application/json',
       coupon
     );
-  }
+  };
 };
 
 module.exports = Cart;
