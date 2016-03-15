@@ -36,7 +36,7 @@ var Cart = function(rh) {
 	};
 
   this.addDiscount = function(cartId, coupon) {
-    return yaas.requestHelper.post(
+    return this.requestHelper.post(
       pathCartBase + '/' + cartId + "/discounts",
       'application/json',
       coupon
