@@ -13,6 +13,7 @@ var CouponService = require('./yaas-coupon.js');
 var Yaas = function() {
     this.init = function(theClientId, theClientSecret, theScope, theProjectId) {
         this.requestHelper = new RequestHelper(theClientId, theClientSecret, theScope, theProjectId);
+        this.requestHelper.setDebug(this.debugCallback);
         this.cart = new CartService(this.requestHelper);
         this.checkout = new CheckoutService(this.requestHelper);
         this.customer = new CustomerService(this.requestHelper);
@@ -25,6 +26,10 @@ var Yaas = function() {
         this.coupon = new CouponService(this.requestHelper);
         return Promise.resolve();
     };
+
+    this.setDebugCallback = function(callback) {
+        this.debugCallback = callback;
+    }
 };
 
 module.exports = Yaas;

@@ -11,7 +11,6 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
     this.clientSecret= theClientSecret;
     this.scope = theScope;
     this.projectId = theProjectId;
-    this.debug = false;
 
     this.getToken = function() {
         if(this.accessToken) {
@@ -74,7 +73,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
             });
 
             if (body && (options.method == 'POST' || options.method == 'PUT')) {
-                if (this.debug) { console.log("Sending data:", body); }
+                this.logDebug('Sending data: ' + body);
                 req.write(body);
             }
             req.end();
@@ -90,7 +89,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
         }
 
         path = this.preparePath(path);
-        if (this.debug) { console.log(method, path); }
+        this.logDebug(method + ' ' + path);
     
         var options = {
             hostname: this.yaasHost,
@@ -187,10 +186,15 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
       return path.replace("{{projectId}}", this.projectId);
     };
 
-    this.setDebug = function(state) {
-      this.debug = state;
+    this.setDebug = function(callback) {
+      this.debugCallback = callback;
     };
 
+    this.logDebug = function(message) {
+        if (this.debugCallback) {
+            this.debugCallback(message);
+        }
+    }
 };
 
 module.exports = RequestHelper;
