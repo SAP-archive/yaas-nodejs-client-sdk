@@ -69,8 +69,9 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
             }.bind(this));
         
             req.on('error', function(e) {
+                this.logDebug(e);
                 reject(e);
-            });
+            }.bind(this));
 
             if (body && (options.method == 'POST' || options.method == 'PUT')) {
                 this.logDebug('Sending data: ' + body);
@@ -117,6 +118,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
                     }.bind(this))
                     .catch(reject);
                 } else if (response.statusCode >= 400) {
+                    this.logDebug(response);
                     reject(response);
                 } else {
                     resolve(response);

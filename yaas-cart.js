@@ -42,6 +42,10 @@ var Cart = function(rh) {
       coupon
     );
   };
+	
+	this.clearCart = function(cartId) {
+		return this.requestHelper.delete(pathCartBase + '/' + cartId + '/items');
+	};
 };
 
 module.exports = Cart;
