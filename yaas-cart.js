@@ -4,10 +4,10 @@ var Cart = function(rh) {
 	this.requestHelper = rh;
 
 	this.create = function(customerNumber, currency, siteCode) {
-		var cart;
-
-		cart.currency = currency;
-		cart.siteCode = siteCode;
+		var cart = {
+			'currency': currency,
+			'siteCode': siteCode
+		};
 
 		if (customerNumber) // cart belongs anonymous customer if no customerId set
 			cart.customerId = customerNumber;
