@@ -4,15 +4,15 @@ var Cart = function(rh) {
 	this.requestHelper = rh;
 
 	this.create = function(customerNumber, currency, siteCode) {
-		return this.requestHelper.post(
-			pathCartBase,
-			'application/json',
-			{
-				customerId : customerNumber,
-				currency : currency,
-				siteCode : siteCode
-			}
-		);
+		var cart;
+
+		cart.currency = currency;
+		cart.siteCode = siteCode;
+
+		if (customerNumber) // cart belongs anonymous customer if no customerId set
+			cart.customerId = customerNumber;
+
+		return this.requestHelper.post(pathCartBase, 'application/json', cart);
 	};
 
 	this.deleteCart = function(cartId) {
@@ -42,7 +42,7 @@ var Cart = function(rh) {
       coupon
     );
   };
-	
+
 	this.clearCart = function(cartId) {
 		return this.requestHelper.delete(pathCartBase + '/' + cartId + '/items');
 	};
