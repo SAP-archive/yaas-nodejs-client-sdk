@@ -11,7 +11,7 @@ var DocumentService = require('./yaas-document.js');
 var CouponService = require('./yaas-coupon.js');
 
 var Yaas = function() {
-    this.init = function(theClientId, theClientSecret, theScope, theProjectId) {
+    this.init = function(theClientId, theClientSecret, theScope, theProjectId, yaasExtensions) {
         this.requestHelper = new RequestHelper(theClientId, theClientSecret, theScope, theProjectId);
         this.requestHelper.setDebug(this.debugCallback);
         this.cart = new CartService(this.requestHelper);
@@ -24,7 +24,16 @@ var Yaas = function() {
         this.site = new SiteService(this.requestHelper);
         this.document = new DocumentService(this.requestHelper);
         this.coupon = new CouponService(this.requestHelper);
-        return Promise.resolve();
+
+        if (yaasExtensions) {
+          yaasExtensions.forEach(function(extension) {
+            var Service = require(extension.path);
+            this[extension.serviceName] = new Service(this.requestHelper);
+            Service = undefined;
+          }.bind(this));
+        }
+
+        return Promise.resolve(this);
     };
 
     this.setDebugCallback = function(callback) {
