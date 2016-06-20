@@ -15,6 +15,10 @@ var Cart = function(rh) {
 		return this.requestHelper.post(pathCartBase, 'application/json', cart);
 	};
 
+	this.get = function(cartId) {
+		return this.requestHelper.get(pathCartBase + '/' + cartId);
+	};
+
 	this.deleteCart = function(cartId) {
 		return this.requestHelper.delete(pathCartBase + '/' + cartId);
 	};
