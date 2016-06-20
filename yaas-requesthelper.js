@@ -51,6 +51,12 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
         this.accessToken = undefined;
     };
 
+    this.reset = function(scope, projectId) {
+      this.invalidateToken();
+      this.scope = scope;
+      this.projectId = projectId;
+    };
+
     this.tryRequest = function(options, body) {
         return new Promise(function(resolve, reject) {
             var req = https.request(options, function (res) {
@@ -67,7 +73,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
                     .catch(reject);
                 }.bind(this));
             }.bind(this));
-        
+
             req.on('error', function(e) {
                 this.logDebug(e);
                 reject(e);
@@ -84,14 +90,14 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
     this.sendRequest = function(method, path, mime, data) {
 
         var headers = {};
-        
+
         if (mime) {
             headers['Content-Type'] = mime;
         }
 
         path = this.preparePath(path);
         this.logDebug(method + ' ' + path);
-    
+
         var options = {
             hostname: this.yaasHost,
             port: 443,
@@ -179,7 +185,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
           default:
             responseBody = response.body;
         }
-        
+
         resolve({statusCode: response.statusCode, body: responseBody});
       });
     };
