@@ -19,6 +19,10 @@ var Cart = function(rh) {
 		return this.requestHelper.get(pathCartBase + '/' + cartId);
 	};
 
+	this.deleteCartItem = function(cartId, itemId) {
+		return this.requestHelper.delete(pathCartBase + '/' + cartId + '/items/' + itemId);
+	};
+
 	this.deleteCart = function(cartId) {
 		return this.requestHelper.delete(pathCartBase + '/' + cartId);
 	};

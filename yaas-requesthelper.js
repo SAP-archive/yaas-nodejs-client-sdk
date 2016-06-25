@@ -88,7 +88,6 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
     };
 
     this.sendRequest = function(method, path, mime, data) {
-
         var headers = {};
 
         if (mime) {
