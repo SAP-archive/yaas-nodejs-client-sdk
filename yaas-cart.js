@@ -19,6 +19,14 @@ var Cart = function(rh) {
 		return this.requestHelper.get(pathCartBase + '/' + cartId);
 	};
 
+	this.mergeCart = function(cartId, sourceCartIds) {
+		return this.requestHelper.post(pathCartBase + '/' + cartId + '/merge',
+		'application/json',
+		{
+			carts: sourceCartIds
+		});
+	};
+
 	this.deleteCartItem = function(cartId, itemId) {
 		return this.requestHelper.delete(pathCartBase + '/' + cartId + '/items/' + itemId);
 	};
