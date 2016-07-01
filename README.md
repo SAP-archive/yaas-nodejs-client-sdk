@@ -2,10 +2,10 @@
 ## Node.js module for hybris as a Service (Yaas)
 
 ### Overview
-This node.js module simplifys the access to the YaaS REST API. It handles authentication via OAuth2, replacement of expired tokens as well as automated retry of failed requests due to expired tokens. Knowledge of URLs is not necessary, every action has its own function. Currently only API calls that were needed for hybris labs prototypes are implemented.
+This Node.js module simplifies the access to the YaaS REST API. It handles authentication via OAuth2, replacement of expired tokens as well as automated retry of failed requests due to expired tokens. Knowledge of URLs is not necessary, every action has its own function. Currently only API calls that were needed for hybris labs prototypes are implemented.
 
 ### Requirements
-This module makes use of JavaScript features that are still considered experimental (i.e. [Promises](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Promise)). You therefore need a more recent version of node.js that supports ECMAScript 6 (Harmony).
+This module makes use of JavaScript features that are still considered experimental (i.e. [Promises](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Promise)). You therefore need a more recent version of Node.js that supports ECMAScript 6 (Harmony).
 
 ### Usage
 Install the module via `npm`
