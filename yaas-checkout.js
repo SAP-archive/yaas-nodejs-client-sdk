@@ -1,16 +1,15 @@
-var requestHelper;
-var pathCheckout;
+var pathCheckout = '/hybris/checkout/v1/{{projectId}}/checkouts';
 
-function init(rh, projectId) {
-	requestHelper = rh;
-	pathCheckout = '/hybris/checkout/b1/' + projectId + '/checkouts/order';
-}
+var Checkout = function(rh) {
+	this.requestHelper = rh;
 
-function checkout(data) {
-	return requestHelper.post(pathCheckout, 'application/json', data);
-}
+	this.checkout = function(data) {
+		return this.requestHelper.post(pathCheckout + '/order', 'application/json', data);
+	};
 
-module.exports = {
-	checkout: checkout,
-	init: init
+	this.get = function(checkoutId) {
+		return this.requestHelper.get(pathCheckout + '/' + checkoutId, {});
+	};
 };
+
+module.exports = Checkout;

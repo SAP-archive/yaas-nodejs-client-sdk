@@ -1,47 +1,67 @@
-var requestHelper;
-var pathCartBase;
+var pathCartBase = '/hybris/cart/v1/{{projectId}}/carts';
 
-function init(rh, projectId) {
-	requestHelper = rh;
-	pathCartBase = '/hybris/cart/b1/' + projectId + '/carts';
-}
+var Cart = function(rh) {
+	this.requestHelper = rh;
 
-function create(customerNumber, currency, siteCode) {
-	return requestHelper.post(
-		pathCartBase,
+	this.create = function(customerNumber, currency, siteCode) {
+		var cart = {
+			'currency': currency,
+			'siteCode': siteCode
+		};
+
+		if (customerNumber) // cart belongs anonymous customer if no customerId set
+			cart.customerId = customerNumber;
+
+		return this.requestHelper.post(pathCartBase, 'application/json', cart);
+	};
+
+	this.getCart = function(cartId) {
+		return this.requestHelper.get(pathCartBase + '/' + cartId);
+	};
+
+	this.mergeCart = function(cartId, sourceCartIds) {
+		return this.requestHelper.post(pathCartBase + '/' + cartId + '/merge',
 		'application/json',
 		{
-			customerId : customerNumber,
-			currency : currency,
-			siteCode : siteCode
-		}
-	);
-}
+			carts: sourceCartIds
+		});
+	};
 
-function deleteCart(cartId) {
-	return requestHelper.delete(pathCartBase + '/' + cartId);
-}
+	this.deleteCartItem = function(cartId, itemId) {
+		return this.requestHelper.delete(pathCartBase + '/' + cartId + '/items/' + itemId);
+	};
 
-function getByCriteria(queryParameters) {
-	return requestHelper.get(pathCartBase, queryParameters);
-}
+	this.deleteCart = function(cartId) {
+		return this.requestHelper.delete(pathCartBase + '/' + cartId);
+	};
 
-function addProduct(cartId, product, quantity, price) {
-	return requestHelper.post(
-		 pathCartBase + '/' + cartId + '/items',
-		'application/json',
-		{
-			price: price,
-			quantity: quantity,
-			product: product
-		}
-	);
-}
+	this.getByCriteria = function(queryParameters) {
+		return this.requestHelper.get(pathCartBase, queryParameters);
+	};
 
-module.exports = {
-	addProduct: addProduct,
-	create: create,
-	delete: deleteCart,
-	getByCriteria: getByCriteria,
-	init: init
+	this.addProduct = function(cartId, product, quantity, price) {
+		return this.requestHelper.post(
+			pathCartBase + '/' + cartId + '/items',
+			'application/json',
+			{
+				price: price,
+				quantity: quantity,
+				product: product
+			}
+		);
+	};
+
+  this.addDiscount = function(cartId, coupon) {
+    return this.requestHelper.post(
+      pathCartBase + '/' + cartId + "/discounts",
+      'application/json',
+      coupon
+    );
+  };
+
+	this.clearCart = function(cartId) {
+		return this.requestHelper.delete(pathCartBase + '/' + cartId + '/items');
+	};
 };
+
+module.exports = Cart;

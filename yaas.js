@@ -1,52 +1,44 @@
-var requestHelper = require('./yaas-requesthelper.js');
-var cart = require('./yaas-cart.js');
-var checkout = require('./yaas-checkout.js');
-var customer = require('./yaas-customer.js');
-var order = require('./yaas-order.js');
-var price = require('./yaas-price.js');
-var product = require('./yaas-product.js');
-var pubsub = require('./yaas-pubsub.js');
-var site = require('./yaas-site.js');
+var RequestHelper = require('./yaas-requesthelper.js');
+var CartService = require('./yaas-cart.js');
+var CheckoutService = require('./yaas-checkout.js');
+var CustomerService = require('./yaas-customer.js');
+var OrderService = require('./yaas-order.js');
+var PriceService = require('./yaas-price.js');
+var ProductService = require('./yaas-product.js');
+var PubSubService = require('./yaas-pubsub.js');
+var SiteService = require('./yaas-site.js');
+var DocumentService = require('./yaas-document.js');
+var CouponService = require('./yaas-coupon.js');
 
-var debug = false;
-var verbose = false;
+var Yaas = function() {
+    this.init = function(theClientId, theClientSecret, theScope, theProjectId, yaasExtensions) {
+        this.requestHelper = new RequestHelper(theClientId, theClientSecret, theScope, theProjectId);
+        this.requestHelper.setDebug(this.debugCallback);
+        this.cart = new CartService(this.requestHelper);
+        this.checkout = new CheckoutService(this.requestHelper);
+        this.customer = new CustomerService(this.requestHelper);
+        this.order = new OrderService(this.requestHelper);
+        this.price = new PriceService(this.requestHelper);
+        this.product = new ProductService(this.requestHelper);
+        this.pubsub = new PubSubService(this.requestHelper);
+        this.site = new SiteService(this.requestHelper);
+        this.document = new DocumentService(this.requestHelper);
+        this.coupon = new CouponService(this.requestHelper);
 
-function init(theClientId, theClientSecret, theScope, theProjectId) {
-	return requestHelper.begin(theClientId, theClientSecret, theScope).then(function() {
-		cart.init(requestHelper, theProjectId);
-		checkout.init(requestHelper, theProjectId);
-		customer.init(requestHelper, theProjectId);
-		order.init(requestHelper, theProjectId);
-		price.init(requestHelper, theProjectId);
-		product.init(requestHelper, theProjectId);
-		pubsub.init(requestHelper);
-		site.init(requestHelper, theProjectId);
-		return Promise.resolve();
-	});
-}
+        if (yaasExtensions) {
+          yaasExtensions.forEach(function(extension) {
+            var Service = require(extension.path);
+            this[extension.serviceName] = new Service(this.requestHelper);
+            Service = undefined;
+          }.bind(this));
+        }
 
-function setDebug(state) {
-	debug = state;
-}
+        return Promise.resolve(this);
+    };
 
-function setVerbose(state) {
-	verbose = state;
-}
-
-function notYetImplemented() {
-	return Promise.reject(new Error("Method not yet implemented!"));
-}
-
-module.exports = {
-	cart: cart,
-	checkout: checkout,
-	customer: customer,
-	init: init,
-	order: order,
-	price: price,
-	product: product,
-	pubsub: pubsub,
-	setDebug: setDebug,
-	setVerbose: setVerbose,
-	site: site
+    this.setDebugCallback = function(callback) {
+        this.debugCallback = callback;
+    }
 };
+
+module.exports = Yaas;

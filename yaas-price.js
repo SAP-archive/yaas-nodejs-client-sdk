@@ -1,20 +1,15 @@
-var requestHelper;
-var pathPriceBase;
+var pathPriceBase = '/hybris/price/v1/{{projectId}}/prices';
 
-function init(rh, projectId) {
-	requestHelper = rh;
-	pathPriceBase = '/hybris/price/b1/' + projectId + '/prices';
-}
+var Price = function(rh) {
+	this.requestHelper = rh;
 
-function getPrices(queryParameters) {
-	return requestHelper.get(pathPriceBase, queryParameters);
-}
+	this.getPrices = function(queryParameters) {
+		return this.requestHelper.get(pathPriceBase, queryParameters);
+	};
 
-function getPricesForProducts(productIds, currency) {
-	return getPrices({productId: productIds, currency: currency});
-}
-
-module.exports = {
-	getPricesForProducts: getPricesForProducts,
-	init: init
+	this.getPricesForProducts = function(productIds, currency) {
+		return this.getPrices({productId: productIds, currency: currency});
+	};
 };
+
+module.exports = Price;

@@ -1,37 +1,30 @@
-var pathOrderBase;
-var requestHelper;
+var pathOrderBase = '/hybris/order/v1/{{projectId}}';
+var pathSalesorderBase = pathOrderBase + '/salesorders';
 
-function init(rh, projectId) {
-	requestHelper = rh;
-	pathOrderBase = '/hybris/order/b1/' + projectId;
-	pathSalesorderBase = pathOrderBase + '/salesorders';
-}
+var Order = function(rh) {
+	this.requestHelper = rh;
 
-function addShipmentToSalesorder(orderId, data) {
-	return requestHelper.put(
-		pathSalesorderBase + '/' + orderId,
-		'application/json',
-		data
-	);
-}
+    this.addShipmentToSalesorder = function(orderId, data) {
+        return this.requestHelper.put(
+            pathSalesorderBase + '/' + orderId,
+            'application/json',
+            data
+        );
+    };
 
-function getSalesorderDetails(orderId) {
-	return requestHelper.get(pathSalesorderBase + '/' + orderId, {});
-}
+    this.getSalesorderDetails = function(orderId) {
+        return this.requestHelper.get(pathSalesorderBase + '/' + orderId, {});
+    };
 
-function transitionSalesorder(orderId, newState) {
-	return requestHelper.post(
-		pathSalesorderBase + '/' + orderId + '/transitions',
-		'application/json',
-		{
-			status: newState
-		}
-	);
-}
-
-module.exports = {
-	addShipmentToSalesorder: addShipmentToSalesorder,
-	getSalesorder: getSalesorderDetails,
-	init: init,
-	transitionSalesorder: transitionSalesorder
+    this.transitionSalesorder = function(orderId, newState) {
+        return this.requestHelper.post(
+            pathSalesorderBase + '/' + orderId + '/transitions',
+            'application/json',
+            {
+                status: newState
+            }
+        );
+    };
 };
+
+module.exports = Order;

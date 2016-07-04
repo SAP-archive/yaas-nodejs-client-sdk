@@ -1,21 +1,29 @@
-var requestHelper;
-var pathCustomerBase;
+var pathCustomerBase = '/hybris/customer/v1/{{projectId}}/';
 
-function init(rh, projectId) {
-	requestHelper = rh;
-	pathCustomerBase = '/hybris/customer/b1/' + projectId + '/customers';
-}
+var Customer = function(rh) {
+    
+    this.requestHelper = rh;
 
-function getCustomer(customerNumber) {
-	return requestHelper.get(pathCustomerBase + '/' + customerNumber, {});
-}
+    this.getCustomer = function(customerNumber) {
+        return this.requestHelper.get(pathCustomerBase + 'customers/' + customerNumber, {});
+    };
 
-function getCustomers(queryParameters) {
-	return requestHelper.get(pathCustomerBase, queryParameters);
-}
+    this.getCustomers = function(queryParameters) {
+        return this.requestHelper.get(pathCustomerBase + 'customers', queryParameters);
+    };
 
-module.exports = {
-	getCustomer: getCustomer,
-	getCustomers: getCustomers,
-	init: init
+    this.signup = function(credentials) {
+        return this.requestHelper.post(pathCustomerBase + 'signup', "application/json", credentials);
+    };
+
+    this.updateCustomer = function(customerNumber, customer) {
+    return this.requestHelper.put(pathCustomerBase + 'customers/' + customerNumber, "application/json", customer);
+    };
+
+    this.createCustomerAddress = function(customerNumber, address) {
+        return this.requestHelper.post(pathCustomerBase + 'customers/' + customerNumber + "/addresses", "application/json", address);
+    };
+
 };
+
+module.exports = Customer;
