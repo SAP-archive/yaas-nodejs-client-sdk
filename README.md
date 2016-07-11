@@ -43,3 +43,5 @@ The various CaaS services are used for namespacing like
 * Structure of returned object used for *all* functions
 * Better namespacing / avoid duplicate naming in function calls (e.g. yaas.cart.deleteCart() becomes yaas.cart.delete())
 
+## How to contact us?
+* Please email labs@hybris.com if you have questions or suggestions
