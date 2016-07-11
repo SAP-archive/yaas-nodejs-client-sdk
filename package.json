@@ -2,11 +2,16 @@
 	"name": "yaas.js",
 	"version": "0.1.2",
 	"description": "Library for YaaS access",
-    "main": "yaas.js",
+	"main": "yaas.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/SAP/yaas-nodejs-client-sdk"
+	},
 	"author": {
 		"name": "Hybris Labs",
 		"email": "labs@hybris.com"
 	},
+	"license": "Apache-2.0",
 	"dependencies": {
 	}
 }
