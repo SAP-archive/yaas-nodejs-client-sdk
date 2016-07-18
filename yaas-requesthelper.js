@@ -1,6 +1,8 @@
 var https = require('https');
 var querystring = require('querystring');
 
+
+
 var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectId) {
     /* Constants */
     this.yaasHost = 'api.yaas.io';
@@ -57,8 +59,25 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
       this.projectId = projectId;
     };
 
-    this.tryRequest = function(options, body) {
-        return new Promise(function(resolve, reject) {
+
+
+    this.request = function(options) {
+        return new Promise((resolve, reject) => {
+            var req = https.request(options, res => {
+                res.on('end', () => resolve(res.body));
+            });
+            req.on('error', e => reject(e));
+            req.end();
+        })
+    };
+
+    this.call = function(){
+
+    };
+
+
+
+
             var req = https.request(options, function (res) {
                 res.setEncoding('utf8');
                 var data = "";
