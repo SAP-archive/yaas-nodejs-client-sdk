@@ -9,6 +9,8 @@ var PubSubService = require('./yaas-pubsub.js');
 var SiteService = require('./yaas-site.js');
 var DocumentService = require('./yaas-document.js');
 var CouponService = require('./yaas-coupon.js');
+var LoyaltyConfigurationService = require('./yaas-loyalty-configuration.js');
+var LoyaltyMemberService = require('./yaas-loyalty-member.js');
 
 var Yaas = function() {
     this.init = function(theClientId, theClientSecret, theScope, theProjectId, yaasExtensions) {
@@ -24,6 +26,8 @@ var Yaas = function() {
         this.site = new SiteService(this.requestHelper);
         this.document = new DocumentService(this.requestHelper);
         this.coupon = new CouponService(this.requestHelper);
+        this.loyaltyConfiguration = new LoyaltyConfigurationService(this.requestHelper);
+        this.loyaltyMember = new LoyaltyMemberService(this.requestHelper);
 
         if (yaasExtensions) {
           yaasExtensions.forEach(function(extension) {

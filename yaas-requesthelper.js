@@ -147,8 +147,10 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
         return this.sendRequest('POST', path, mime, this.prepareData(postData, mime));
     };
 
-    this.put = function(path, mime, putData) {
-        return this.sendRequest('PUT', path, mime, this.prepareData(putData, mime));
+    this.put = function(path, mime, putData, params) {
+        var queryParamString = querystring.stringify(params);
+        var pathWithParams = path + (queryParamString.length > 0 ? '?' + queryParamString : '');
+        return this.sendRequest('PUT', pathWithParams, mime, this.prepareData(putData, mime));
     };
 
     this.prepareData = function(data, mime) {
