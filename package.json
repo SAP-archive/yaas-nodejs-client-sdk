@@ -1,5 +1,5 @@
 {
-	"name": "yaas.js",
+	"name": "YaaS.js",
 	"version": "0.1.2",
 	"description": "Library for YaaS access",
 	"main": "yaas.js",
@@ -11,6 +11,15 @@
 		"name": "Hybris Labs",
 		"email": "labs@hybris.com"
 	},
+	"keywords" : [
+		"yaas",
+		"yaas.io"
+		"yaas.js",
+		"hybris",
+		"hybris as a service",
+		"hybris-as-a-service",
+		"yaas sdk"
+	],
 	"license": "Apache-2.0",
 	"dependencies": {
 	}
