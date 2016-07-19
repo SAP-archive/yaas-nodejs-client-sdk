@@ -11,7 +11,7 @@ This Node.js module simplifies the access to the SAP Hybris as a Service (YaaS) 
 ## Usage
 Install the module via `npm`
 
-	npm install git+ssh://git@github.com/SAP/yaas-nodejs-client-sdk.git --save
+	npm install yaas.js
 
 Include the module like this in your node.js code
 
