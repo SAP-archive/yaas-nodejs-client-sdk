@@ -37,10 +37,6 @@ yaas.init(
 }, function(reason) {
 	// init not successful
 });
-
-# Optional parameters:
-# extensionModules [array] - allows you to load your own custom modules based on yaas.js
-# overrideApiUrl [string] - allows you to specify a custom api url (eg. yaas staging environment)
 ````
 
 On successful initialization your credentials seem valid and the module was able to obtain an authentication token.
