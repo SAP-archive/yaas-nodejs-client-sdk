@@ -13,8 +13,8 @@ var LoyaltyConfigurationService = require('./yaas-loyalty-configuration.js');
 var LoyaltyMemberService = require('./yaas-loyalty-member.js');
 
 var Yaas = function() {
-    this.init = function(theClientId, theClientSecret, theScope, theProjectId, yaasExtensions) {
-        this.requestHelper = new RequestHelper(theClientId, theClientSecret, theScope, theProjectId);
+    this.init = function(theClientId, theClientSecret, theScope, theProjectId, yaasExtensions, overrideApiUrl) {
+        this.requestHelper = new RequestHelper(theClientId, theClientSecret, theScope, theProjectId, overrideApiUrl);
         this.requestHelper.setDebug(this.debugCallback);
         this.cart = new CartService(this.requestHelper);
         this.checkout = new CheckoutService(this.requestHelper);
@@ -42,7 +42,7 @@ var Yaas = function() {
 
     this.setDebugCallback = function(callback) {
         this.debugCallback = callback;
-    }
+    };
 };
 
 module.exports = Yaas;

@@ -1,11 +1,10 @@
 var https = require('https');
 var querystring = require('querystring');
 
-var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectId) {
+var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectId, overrideApiUrl) {
     /* Constants */
-    this.yaasHost = 'api.yaas.io';
+    this.yaasHost = (overrideApiUrl) ? overrideApiUrl : 'api.yaas.io';
     this.oauthTokenPath = '/hybris/oauth2/v1/token';
-
     /* Variables */
     this.clientId = theClientId;
     this.clientSecret= theClientSecret;
@@ -13,6 +12,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
     this.projectId = theProjectId;
 
     this.getToken = function() {
+
         if(this.accessToken) {
             return Promise.resolve(this.accessToken);
         }
@@ -32,7 +32,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
             };
             return this.tryRequest(options, this.prepareData(body, 'application/x-www-form-urlencoded'))
             .then(function (response) {
-                if (response.statusCode == 200) {
+                if (response.statusCode === 200) {
                     this.accessToken = response.body.access_token;
                     return Promise.resolve(this.accessToken);
                 } else {
@@ -79,7 +79,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
                 reject(e);
             }.bind(this));
 
-            if (body && (options.method == 'POST' || options.method == 'PUT')) {
+            if (body && (options.method === 'POST' || options.method === 'PUT')) {
                 this.logDebug('Sending data: ' + body);
                 req.write(body);
             }
@@ -112,7 +112,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
                 return this.tryRequest(options, data);
             }.bind(this))
             .then(function(response) {
-                if(response.statusCode && response.statusCode == 401) {
+                if(response.statusCode && response.statusCode === 401) {
                     this.invalidateToken();
                     this.getToken()
                     .then(function(token){
@@ -167,8 +167,12 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
     this.processResponseBody = function(response) {
       return new Promise(function(resolve, reject) {
         var responseMime;
+        var responseHeaders = {};
         if (response.headers['content-type']) {
           responseMime = response.headers['content-type'].split(';')[0];
+        }
+        if (response.headers['hybris-count']) {
+           responseHeaders['hybris-count'] = response.headers['hybris-count'];
         }
 
         var responseBody;
@@ -186,8 +190,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
           default:
             responseBody = response.body;
         }
-
-        resolve({statusCode: response.statusCode, body: responseBody});
+        resolve({statusCode: response.statusCode, body: responseBody, headers: responseHeaders});
       });
     };
 
@@ -203,7 +206,8 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
         if (this.debugCallback) {
             this.debugCallback(message);
         }
-    }
+    };
+
 };
 
 module.exports = RequestHelper;

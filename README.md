@@ -24,23 +24,44 @@ Then initialize the module
 ````javascript
 var yaas = new YaaS();
 
-yaas.init(clientId, clientSecret, scopes, projectId)
+yaas.init(clientId, clientSecret, scopes, projectId, [optional] extensionModules, [optional] overrideApiUrl)
 .then(function(response) {
 	// init successful
 }, function(reason) {
 	// init not successful
 });
+
+# Optional parameters:
+# extensionModules allows you to load your own custom modules based on yaas.js
+# overrideApiUrl allows you to specify a custom api url (eg. yaas staging environment)
 ````
 
 On successful initialization your credentials seem valid and the module was able to obtain an authentication token.
 You do not need to worry about this token, as it is handled internally and refreshed automatically.
 
-The various CaaS services are used for namespacing like
+The various YaaS services are used for namespacing like
 
 ````
 yaas.product.getProduct(theProductId)
 yaas.cart.deleteCart(cartId)
 ...
+````
+
+Example of getting a set of documents: 
+````javascript
+var reqParams = {
+    pageNumber: settings.pageNumber,
+    pageSize: settings.pageSize,
+    totalCount: true
+};
+yaas.document.getAll(clientApplicationId, documentType, reqParams).then(
+    function(response){
+        console.log('Fetched '+response.data.length+' of '+response.headers['hybris-count']+' documents.');
+    }, 
+    function(err){ 
+        console.error('Error: ', err);
+    }
+);
 ````
 
 ## Things to improve
