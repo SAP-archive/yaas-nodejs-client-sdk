@@ -24,7 +24,14 @@ Then initialize the module
 ````javascript
 var yaas = new YaaS();
 
-yaas.init(clientId, clientSecret, scopes, projectId, [optional] extensionModules, [optional] overrideApiUrl)
+yaas.init(
+    'clientId',
+    'clientSecret', 
+    'your scopes like hybris.myservice_view hybris.myservice_manage',
+    'projectId',
+    ['myservice'], // optional, array - allows you to load your own custom modules based on yaas.js
+    'api.yaas.io' // optional - allows you to specify a custom api url (eg. yaas staging environment)
+)
 .then(function(response) {
 	// init successful
 }, function(reason) {
@@ -32,8 +39,8 @@ yaas.init(clientId, clientSecret, scopes, projectId, [optional] extensionModules
 });
 
 # Optional parameters:
-# extensionModules allows you to load your own custom modules based on yaas.js
-# overrideApiUrl allows you to specify a custom api url (eg. yaas staging environment)
+# extensionModules [array] - allows you to load your own custom modules based on yaas.js
+# overrideApiUrl [string] - allows you to specify a custom api url (eg. yaas staging environment)
 ````
 
 On successful initialization your credentials seem valid and the module was able to obtain an authentication token.
@@ -50,8 +57,8 @@ yaas.cart.deleteCart(cartId)
 Example of getting a set of documents: 
 ````javascript
 var reqParams = {
-    pageNumber: settings.pageNumber,
-    pageSize: settings.pageSize,
+    pageNumber: 1,
+    pageSize: 10,
     totalCount: true
 };
 yaas.document.getAll(clientApplicationId, documentType, reqParams).then(
