@@ -22,5 +22,11 @@
 	],
 	"license": "Apache-2.0",
 	"dependencies": {
+	},
+	"devDependencies": {
+		"jshint": "~2"
+	},
+	"jshintConfig": {
+		"esversion": 6
 	}
 }

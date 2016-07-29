@@ -38,7 +38,7 @@ var Document = function(rh) {
               'application/json',
               { payload: payload }
             );
-  }
+  };
 
 };
 

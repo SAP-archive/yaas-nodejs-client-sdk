@@ -4,8 +4,8 @@ var Coupon = function(rh) {
   this.requestHelper = rh;
 
   this.post = function(coupon) {
-    return this.requestHelper.post(pathCouponBase, 'application/json', coupon)
-  }
+    return this.requestHelper.post(pathCouponBase, 'application/json', coupon);
+  };
 
   this.get = function(couponCode) {
     return this.requestHelper.get(pathCouponBase + '/' + couponCode);
