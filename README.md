@@ -70,6 +70,10 @@ yaas.document.getAll(clientApplicationId, documentType, reqParams).then(
 );
 ````
 
+## Documentation and examples
+Blog posts:
+* [… and the best part is, it’s open source!](http://labs.hybris.com/2016/07/20/best-part-open-source/)
+
 ## Things to improve
 * More examples
 * Handling of HTTP status codes
