@@ -44,7 +44,7 @@ var member =
 describe('Loyalty', function () {
 
 	// we are not alone; need some time to connect to another server
-	this.retries(5);
+	this.retries(10);
 	this.timeout(5000);
 
     describe('member', function () {
