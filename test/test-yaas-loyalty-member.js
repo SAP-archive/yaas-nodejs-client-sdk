@@ -45,7 +45,7 @@ describe('Loyalty', function () {
 
 	// we are not alone; need some time to connect to another server
 	this.retries(5);
-	this.timeout(3000);
+	this.timeout(5000);
 
     describe('member', function () {
         var SCOPES = "sap.loycore_manage";
