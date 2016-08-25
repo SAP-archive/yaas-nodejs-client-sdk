@@ -21,10 +21,16 @@
 		"yaas sdk"
 	],
 	"license": "Apache-2.0",
+	"scripts": {
+		"test": "node_modules/.bin/mocha",
+		"lint": "jshint"
+	},
 	"dependencies": {
 	},
 	"devDependencies": {
-		"jshint": "~2"
+		"jshint": "~2",
+		"mocha": "^3.0.1",
+		"should": "^10.0.0"
 	},
 	"jshintConfig": {
 		"esversion": 6

@@ -1,7 +1,0 @@
-Please create a file called: yaas-credentials.json in this folder. 
-
-
-{
-	"clientId" : "<YOUR CLIENT ID>",
-	"clientSecret" : "<YOUR CLIENT SECRET>"
-}

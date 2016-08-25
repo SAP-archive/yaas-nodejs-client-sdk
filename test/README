@@ -1,0 +1,6 @@
+Tests require following environment variables:
+
+- TEST_YAAS_CLIENT_ID
+- TEST_YAAS_CLIENT_SECRET
+- TEST_YAAS_LOYALTY_PROGRAM_ID
+- TEST_YAAS_LOYALTY_TIER_ID
