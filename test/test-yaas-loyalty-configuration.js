@@ -15,8 +15,8 @@ describe('Loyalty', function () {
         it('should return a program configuration', function (done) {
             
             // we are not alone; need some time to connect to another server
-            this.retries(5);
-            this.timeout(3000);
+            this.retries(10);
+            this.timeout(5000);
 
             yaas.loyaltyConfiguration.getProgramConfigurations()
             .then(res => {
