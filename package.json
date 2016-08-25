@@ -30,7 +30,7 @@
 	"devDependencies": {
 		"jshint": "~2",
 		"mocha": "^3.0.1",
-		"should": "^10.0.0"
+		"should": "^11.0.0"
 	},
 	"jshintConfig": {
 		"esversion": 6
