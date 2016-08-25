@@ -9,6 +9,20 @@ var Product = function(rh) {
 	};
 
 	this.getProducts = function(queryParameters) {
+		var qp = {};
+		qp.q = queryParameters.q;
+		if (qp.sort) {
+			qp.sort = queryParameters.sort;
+		}
+		if (qp.pageNumber) {
+			qp.pageNumber = queryParameters.pageNumber;
+		}
+		if (qp.pageSize) {
+			qp.pageSize = queryParameters.pageSize;
+		}
+		if (qp.effectiveDate) {
+			qp.effectiveDate = queryParameters.effectiveDate;
+		}
 		var q = [];
 		if (queryParameters) {
 			if (queryParameters.q) {
@@ -18,10 +32,9 @@ var Product = function(rh) {
 					}
 				}
 			}
-			queryParameters.q = q.join(" ");
+			qp.q = q.join(" ");
 		}
-
-		return this.requestHelper.get(pathProductBase, queryParameters);
+		return this.requestHelper.get(pathProductBase, qp);
 	};
 
 };
