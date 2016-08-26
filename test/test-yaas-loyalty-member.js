@@ -53,7 +53,7 @@ describe('Loyalty', function () {
         it('should create a member', function (done) {
 			yaas.loyaltyMember.createMember(member)
 			.then(res => {
-				console.log(JSON.stringify(res.body));
+				//console.log(JSON.stringify(res.body));
 				done();
 			})
 			.catch(err => done(err));
