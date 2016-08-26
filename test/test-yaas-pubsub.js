@@ -78,50 +78,10 @@ describe('PubSub', function () {
     })
 
     it('should return the same payload again', function (done) {
-      var wait = 5000;
-      this.timeout(wait + 1000);
-      this.slow(wait + 3000);
+      // can take some time before re-reading is allowed
+      this.retries(10);
 
-          setTimeout(function () {
-
-            yaas.pubsub.read(topicOwnerClient, eventType, 1, true)
-            .then(res => {
-              res.should.not.be.empty();
-              var event = res.events[0];
-              event.should.have.a.property('eventType', eventType);
-              event.should.have.a.property('payload', payload);
-              done();
-            })
-            .catch(err => done(err));
-
-      }, wait);
-    })
-
-    it('should return an empty payload after autocommit', function (done) {
-      //console.log(topicOwnerClient, eventType, payload);
-      var wait = 5000;
-      this.timeout(wait + 1000);
-      this.slow(wait + 3000);
-
-          setTimeout(function () {
-
-            yaas.pubsub.read(topicOwnerClient, eventType)
-            .then(res => {
-              should(res).be.undefined;
-              done();
-            })
-            .catch(err => done(err));
-
-      }, wait);
-    })
-
-  })
-
-/*
-  describe('commit', function () {
-    it('should return the payload', function (done) {
-      //console.log(topicOwnerClient, eventType, payload);
-      yaas.pubsub.commit(topicOwnerClient, eventType, topic)
+      yaas.pubsub.read(topicOwnerClient, eventType, 1, true)
       .then(res => {
         res.should.not.be.empty();
         var event = res.events[0];
@@ -131,6 +91,23 @@ describe('PubSub', function () {
       })
       .catch(err => done(err));
     })
+
+    it('should return an empty payload after autocommit', function (done) {
+      // can take some time before re-reading is allowed
+      this.retries(10);
+
+      yaas.pubsub.read(topicOwnerClient, eventType)
+      .then(res => {
+        should(res).be.undefined;
+        done();
+      })
+      .catch(err => done(err));
+    })
+
+  })
+
+  describe('commit', function () {
+    it.skip('should commit', function (done) {
+    })
   })  
-*/
 });
