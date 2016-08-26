@@ -1,38 +1,40 @@
 {
-	"name": "yaas.js",
-	"version": "0.1.5",
-	"description": "Library for YaaS access",
-	"main": "yaas.js",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/SAP/yaas-nodejs-client-sdk"
-	},
-	"author": {
-		"name": "Hybris Labs",
-		"email": "labs@hybris.com"
-	},
-	"keywords" : [
-		"yaas",
-		"yaas.io",
-		"yaas.js",
-		"hybris",
-		"hybris as a service",
-		"hybris-as-a-service",
-		"yaas sdk"
-	],
-	"license": "Apache-2.0",
-	"scripts": {
-		"test": "node_modules/.bin/mocha",
-		"lint": "jshint"
-	},
-	"dependencies": {
-	},
-	"devDependencies": {
-		"jshint": "~2",
-		"mocha": "^3.0.1",
-		"should": "^11.0.0"
-	},
-	"jshintConfig": {
-		"esversion": 6
-	}
+  "name": "yaas.js",
+  "version": "0.1.5",
+  "description": "Library for YaaS access",
+  "main": "yaas.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SAP/yaas-nodejs-client-sdk"
+  },
+  "author": {
+    "name": "Hybris Labs",
+    "email": "labs@hybris.com"
+  },
+  "keywords": [
+    "yaas",
+    "yaas.io",
+    "yaas.js",
+    "hybris",
+    "hybris as a service",
+    "hybris-as-a-service",
+    "yaas sdk"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "node_modules/.bin/mocha",
+    "coverage": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --check-leaks",
+    "lint": "jshint"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "istanbul": "^0.4.5",
+    "jshint": "~2",
+    "mocha": "^3.0.2",
+    "mocha-istanbul": "^0.3.0",
+    "should": "^11.0.0"
+  },
+  "jshintConfig": {
+    "esversion": 6
+  }
 }
