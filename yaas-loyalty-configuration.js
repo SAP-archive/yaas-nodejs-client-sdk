@@ -1,5 +1,6 @@
-var pathLoyaltyConfigurationBase = '/hybris/loy-config/v1';
+'use strict';
 
+var pathLoyaltyConfigurationBase = '/hybris/loy-config/v1';
 
 var Configuration = function (rh)
 {

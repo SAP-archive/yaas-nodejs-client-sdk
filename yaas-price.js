@@ -1,3 +1,5 @@
+'use strict';
+
 var pathPriceBase = '/hybris/price/v1/{{projectId}}/prices';
 
 var Price = function(rh) {

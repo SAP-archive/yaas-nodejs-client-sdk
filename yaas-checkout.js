@@ -1,3 +1,5 @@
+'use strict';
+
 var pathCheckout = '/hybris/checkout/v1/{{projectId}}/checkouts';
 
 var Checkout = function(rh) {

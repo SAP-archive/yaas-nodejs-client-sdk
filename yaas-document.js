@@ -1,3 +1,5 @@
+'use strict';
+
 var pathDocumentBase = '/hybris/document/v1/{{projectId}}';
 
 var Document = function(rh) {
@@ -8,7 +10,9 @@ var Document = function(rh) {
   };
 
   this.get = function(applicationId, documentType, documentId, queryParameters) {
-    return this.requestHelper.get(pathDocumentBase + '/' + applicationId + '/data/' + documentType + '/' + documentId, queryParameters);
+    return this.requestHelper.get(
+      pathDocumentBase + '/' + applicationId + '/data/' + documentType + '/' + documentId, 
+      queryParameters);
   };
 
   this.create = function(applicationId, documentType, payload) {
@@ -28,7 +32,8 @@ var Document = function(rh) {
   };
 
   this.destroy = function(applicationId, documentType, documentId) {
-    return this.requestHelper.delete(pathDocumentBase + '/' + applicationId + '/data/' + documentType + '/' + documentId);
+    return this.requestHelper.delete(
+      pathDocumentBase + '/' + applicationId + '/data/' + documentType + '/' + documentId);
   };
 
   // DEPRECATED!!!

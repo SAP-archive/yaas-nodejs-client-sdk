@@ -1,3 +1,5 @@
+'use strict';
+
 var pathCustomerBase = '/hybris/customer/v1/{{projectId}}/';
 
 var Customer = function(rh) {
@@ -13,15 +15,18 @@ var Customer = function(rh) {
     };
 
     this.signup = function(credentials) {
-        return this.requestHelper.post(pathCustomerBase + 'signup', "application/json", credentials);
+        return this.requestHelper.post(pathCustomerBase + 'signup', 'application/json', credentials);
     };
 
     this.updateCustomer = function(customerNumber, customer) {
-    return this.requestHelper.put(pathCustomerBase + 'customers/' + customerNumber, "application/json", customer);
+    return this.requestHelper.put(pathCustomerBase + 'customers/' + customerNumber, 'application/json', customer);
     };
 
     this.createCustomerAddress = function(customerNumber, address) {
-        return this.requestHelper.post(pathCustomerBase + 'customers/' + customerNumber + "/addresses", "application/json", address);
+        return this.requestHelper.post(
+            pathCustomerBase + 'customers/' + customerNumber + '/addresses', 
+            'application/json', 
+            address);
     };
 
 };

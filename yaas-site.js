@@ -1,3 +1,5 @@
+'use strict';
+
 var pathSiteBase = '/hybris/site/v1/{{projectId}}/sites';
 
 var Site = function(rh) {

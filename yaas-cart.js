@@ -1,3 +1,5 @@
+'use strict';
+
 var pathCartBase = '/hybris/cart/v1/{{projectId}}/carts';
 
 var Cart = function(rh) {
@@ -9,8 +11,9 @@ var Cart = function(rh) {
 			'siteCode': siteCode
 		};
 
-		if (customerNumber) // cart belongs anonymous customer if no customerId set
+		if (customerNumber) { // cart belongs anonymous customer if no customerId set
 			cart.customerId = customerNumber;
+		}
 
 		return this.requestHelper.post(pathCartBase, 'application/json', cart);
 	};
@@ -53,7 +56,7 @@ var Cart = function(rh) {
 
   this.addDiscount = function(cartId, coupon) {
     return this.requestHelper.post(
-      pathCartBase + '/' + cartId + "/discounts",
+      pathCartBase + '/' + cartId + '/discounts',
       'application/json',
       coupon
     );

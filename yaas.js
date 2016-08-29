@@ -1,3 +1,5 @@
+'use strict';
+
 var RequestHelper = require('./yaas-requesthelper.js');
 var CartService = require('./yaas-cart.js');
 var CheckoutService = require('./yaas-checkout.js');

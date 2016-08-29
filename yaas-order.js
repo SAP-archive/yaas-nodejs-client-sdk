@@ -1,3 +1,5 @@
+'use strict';
+
 var pathOrderBase = '/hybris/order/v1/{{projectId}}';
 var pathSalesorderBase = pathOrderBase + '/salesorders';
 

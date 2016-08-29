@@ -1,3 +1,5 @@
+'use strict';
+
 var https = require('https');
 var querystring = require('querystring');
 
@@ -37,7 +39,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
                     return Promise.resolve(this.accessToken);
                 } else {
                     this.invalidateToken();
-                    return Promise.reject(new Error("Could not obtain token!" + JSON.stringify(response.body)));
+                    return Promise.reject(new Error('Could not obtain token!' + JSON.stringify(response.body)));
                 }
             }.bind(this))
             .catch(function(e) {
@@ -61,7 +63,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
         return new Promise(function(resolve, reject) {
             var req = https.request(options, function (res) {
                 res.setEncoding('utf8');
-                var data = "";
+                var data = '';
 
                 res.on('data', function (chunk) {
                     data += chunk;
@@ -195,7 +197,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
     };
 
     this.preparePath = function(path) {
-      return path.replace("{{projectId}}", this.projectId);
+      return path.replace('{{projectId}}', this.projectId);
     };
 
     this.setDebug = function(callback) {

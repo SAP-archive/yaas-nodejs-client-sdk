@@ -24,7 +24,7 @@
   "scripts": {
     "test": "node_modules/.bin/mocha",
     "coverage": "node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --check-leaks",
-    "lint": "jshint"
+    "lint": "jshint --config .jshintrc *.js"
   },
   "dependencies": {},
   "devDependencies": {

@@ -1,4 +1,23 @@
+'use strict';
+
 var pathPubSubBase = '/hybris/pubsub/v1/topics';
+
+/**
+ * Convert PubSub event payloads into proper nested JSON
+ */
+function fixEventPayload(events) {
+    return new Promise(function (resolve, reject) {
+        events.forEach(function(event) {
+            try {
+                event.payload = JSON.parse(event.payload);
+            } catch (e) {
+                console.log('Could not parse payload');
+                return reject(new Error('Could not parse payload: ' + e.message));
+            }
+        });
+        resolve();
+    });
+}
 
 var PubSub = function(rh) {
     this.requestHelper = rh;
@@ -11,10 +30,10 @@ var PubSub = function(rh) {
                 token: token
             }
         ).then(function (response) {
-            if (response.statusCode == 200) {
+            if (response.statusCode === 200) {
                 return Promise.resolve();
             } else {
-                var errorMessage = "Problem: " + JSON.stringify(response.body);
+                var errorMessage = 'Problem: ' + JSON.stringify(response.body);
                 return Promise.reject(new Error(errorMessage));
             }
         });
@@ -30,15 +49,15 @@ var PubSub = function(rh) {
                 autoCommit: autoCommit || false
             }
         ).then(function (response) {
-            if (response.statusCode == 204) {
+            if (response.statusCode === 204) {
                 return Promise.resolve();
-            } else if (response.statusCode == 200) {
+            } else if (response.statusCode === 200) {
                 return fixEventPayload(response.body.events).then(function() {
                     return Promise.resolve(response.body);
                 });
             } else {
-                console.log("Problem: " + JSON.stringify(response.body));
-                return Promise.reject(new Error("Problem with request: " + JSON.stringify(response.body)));
+                console.log('Problem: ' + JSON.stringify(response.body));
+                return Promise.reject(new Error('Problem with request: ' + JSON.stringify(response.body)));
             }
         });
     };
@@ -51,11 +70,11 @@ var PubSub = function(rh) {
                 payload: JSON.stringify(payload)
             }
         ).then(function (response) {
-            if (response.statusCode == 201) {
+            if (response.statusCode === 201) {
                 return Promise.resolve();
             } else {
-                console.log("Problem: " + JSON.stringify(response.body));
-                return Promise.reject(new Error("Problem with request: " + JSON.stringify(response.body)));
+                console.log('Problem: ' + JSON.stringify(response.body));
+                return Promise.reject(new Error('Problem with request: ' + JSON.stringify(response.body)));
             }
         });
     };
@@ -68,31 +87,16 @@ var PubSub = function(rh) {
                 eventType: eventType
             }
         ).then(function (response) {
-            if (response.statusCode == 201) {
+            if (response.statusCode === 201) {
                 return Promise.resolve();
             } else {
-                console.log("Problem: " + JSON.stringify(response.body));
-                return Promise.reject(new Error("Problem with request: " + JSON.stringify(response.body)));
+                console.log('Problem: ' + JSON.stringify(response.body));
+                return Promise.reject(new Error('Problem with request: ' + JSON.stringify(response.body)));
             }
         });
     };
 };
 
-/**
- * Convert PubSub event payloads into proper nested JSON
- */
-function fixEventPayload(events) {
-    return new Promise(function (resolve, reject) {
-        events.forEach(function(event) {
-            try {
-                event.payload = JSON.parse(event.payload);
-            } catch (e) {
-                console.log("Could not parse payload");
-                return reject(new Error("Could not parse payload: " + e.message));
-            }
-        });
-        resolve();
-    });
-}
+
 
 module.exports = PubSub;
