@@ -77,7 +77,7 @@ describe('PubSub', function () {
       });
     })
 
-    it('should return the same payload again', function (done) {
+    it.skip('should return the same payload again', function (done) {
       // can take some time before re-reading is allowed
       this.retries(10);
 
@@ -92,7 +92,7 @@ describe('PubSub', function () {
       .catch(err => done(err));
     })
 
-    it('should return an empty payload after autocommit', function (done) {
+    it.skip('should return an empty payload after autocommit', function (done) {
       // can take some time before re-reading is allowed
       this.retries(10);
 
