@@ -1,6 +1,6 @@
 {
   "name": "yaas.js",
-  "version": "0.1.8",
+  "version": "0.2.0",
   "description": "Library for YaaS access",
   "main": "yaas.js",
   "repository": {

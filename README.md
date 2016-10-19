@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/SAP/yaas-nodejs-client-sdk.svg?branch=master)](https://travis-ci.org/SAP/yaas-nodejs-client-sdk)
 [![Dependency status](https://img.shields.io/david/SAP/yaas-nodejs-client-sdk.svg)](https://david-dm.org/SAP/yaas-nodejs-client-sdk)
+[![devDependencies Status](https://david-dm.org/SAP/yaas-nodejs-client-sdk/dev-status.svg)](https://david-dm.org/SAP/yaas-nodejs-client-sdk?type=dev)
 
 # YaaS.js, a Node.js client library for SAP Hybris as a Service (YaaS)
 
