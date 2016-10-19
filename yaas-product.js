@@ -1,6 +1,6 @@
 'use strict';
 
-var pathProductBase = '/hybris/product/v1/{{projectId}}/products';
+var pathProductBase = '/hybris/product/v2/{{projectId}}/products';
 
 var Product = function(rh) {
 	this.requestHelper = rh;

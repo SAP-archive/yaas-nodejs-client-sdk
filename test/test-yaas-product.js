@@ -10,17 +10,17 @@ var scopes = "";
 yaas.init(process.env.TEST_YAAS_CLIENT_ID, process.env.TEST_YAAS_CLIENT_SECRET, scopes);
 
 describe('Product', function () {
-  describe('get details by sku', function () {
+  describe('get details by code', function () {
     it('should find a product', function (done) {
 
       var query = {
-        "q" : { "sku": "yaasproduct1" }
+        "q" : { "code": "yaasproduct1" }
       };
 
       yaas.product.getProducts(query)
       .then(res => {
         res.body[0].should.have.property('id');
-        res.body[0].should.have.property('sku', query.q.sku);
+        res.body[0].should.have.property('code', query.q.code);
         done();
       })
       .catch(err => done(err));
@@ -29,7 +29,7 @@ describe('Product', function () {
     it('should not find a product', function (done) {
 
       var query = {
-        "q" : { "sku": "Pr0ductN0tD3f1n3d" }
+        "q" : { "code": "Pr0ductN0tD3f1n3d" }
       };
 
       yaas.product.getProducts(query)
