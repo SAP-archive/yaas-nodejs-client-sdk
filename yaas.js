@@ -14,10 +14,13 @@ var CouponService = require('./yaas-coupon.js');
 var LoyaltyConfigurationService = require('./yaas-loyalty-configuration.js');
 var LoyaltyMemberService = require('./yaas-loyalty-member.js');
 
+var language = undefined;
+
 var Yaas = function() {
     this.init = function(theClientId, theClientSecret, theScope, theProjectId, yaasExtensions, overrideApiUrl) {
         this.requestHelper = new RequestHelper(theClientId, theClientSecret, theScope, theProjectId, overrideApiUrl);
         this.requestHelper.setDebug(this.debugCallback);
+        this.requestHelper.setLanguage(language);
         this.cart = new CartService(this.requestHelper);
         this.checkout = new CheckoutService(this.requestHelper);
         this.customer = new CustomerService(this.requestHelper);
@@ -45,6 +48,13 @@ var Yaas = function() {
     this.setDebugCallback = function(callback) {
         this.debugCallback = callback;
     };
+
+    this.setLanguage = function(value) {
+        language = value;
+        if (this.requestHelper) {
+            this.requestHelper.setLanguage(value);
+        }
+    }
 };
 
 module.exports = Yaas;
