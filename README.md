@@ -75,6 +75,16 @@ yaas.document.getAll(clientApplicationId, documentType, reqParams).then(
 Blog posts:
 * [… and the best part is, it’s open source!](http://labs.hybris.com/2016/07/20/best-part-open-source/)
 
+### Localization
+In order to receive content in a certain language (e.g. product names), you can use the method `setLanguage()` like this:
+````javascript
+yaas.setLanguage('en');
+````
+The set value will be sent as the Accept-Language header.
+This method can be called anytime before and after `init()`, affecting all following API calls.
+Setting a value of `undefined` (the default value) lets the called service decide which language(s) to return.
+Please check the documentation of the respective service for default behavior.
+
 ## Things to improve
 * More examples
 * Handling of HTTP status codes
