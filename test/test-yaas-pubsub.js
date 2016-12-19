@@ -43,6 +43,10 @@ describe('PubSub', function () {
   })
 
   describe('publish', function () {
+    it('should wait a bit before publishing something', function (done) {
+      setTimeout(done, 800);
+    });
+
     it('should publish a topic without errors', function (done) {
       yaas.pubsub.publish(topicOwnerClient, eventType, payload)
       .then(res => {
