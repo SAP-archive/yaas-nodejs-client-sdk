@@ -27,7 +27,7 @@ describe('Price', function () {
         res.body.should.be.instanceof(Array).and.have.lengthOf(1);
         res.body[0].should.have.property('priceId');
         res.body[0].should.have.property('currency', 'USD');
-        _productId = res.body[0].productId; //'57bda75e067833001dbeec30'
+        _productId = res.body[0].productId; // store productId in variable for next test
         done();
       })
       .catch(err => done(err));
@@ -36,10 +36,6 @@ describe('Price', function () {
 
   describe('get prices by product id', function () {
     it('should find a price', function (done) {
-      
-      var query = {
-        "q" : { "code": "yaasproduct1" }
-      };
       
       yaas.price.getPricesForProducts([_productId], 'USD')
       .then(res => {
