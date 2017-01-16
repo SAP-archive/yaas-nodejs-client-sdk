@@ -48,6 +48,9 @@ var Product = function(rh) {
 		return this.requestHelper.get(pathProductBase, qp);
 	};
 
+        this.updateProduct = function(product) {
+		return this.requestHelper.put(pathProductBase + '/' + product.id, 'application/json', product);
+        };
 };
 
 module.exports = Product;

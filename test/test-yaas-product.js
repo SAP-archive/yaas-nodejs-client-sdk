@@ -9,7 +9,7 @@ var yaas = new YaaS();
 
 var scopes = "";
 
-yaas.init(process.env.TEST_YAAS_CLIENT_ID, process.env.TEST_YAAS_CLIENT_SECRET, scopes);
+yaas.init(process.env.TEST_YAAS_CLIENT_ID, process.env.TEST_YAAS_CLIENT_SECRET, scopes, process.env.TEST_YAAS_IDENTIFIER.split('.')[0]);
 
 describe('Product', function () {
   describe('get details by code', function () {
@@ -108,4 +108,26 @@ describe('Product', function () {
                 })
         });
     })
+
+    describe('Update Product', function () {
+        it('find a product and update it with same data', function (done) {
+
+        var query = {
+            "q" : { "code": "yaasproduct1" }
+        };
+
+        yaas.product.getProducts(query)
+        .then(res => {
+            res.body[0].should.have.property('id');
+            res.body[0].should.have.property('code', query.q.code);
+            return res.body[0];  
+        })
+        .then(product => {
+            yaas.product.updateProduct(product);
+            done();
+        })
+        .catch(err => done(err));
+        })
+    })
+
 });
