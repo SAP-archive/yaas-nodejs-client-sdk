@@ -1,0 +1,9 @@
+{
+  "credentials": {
+    "clientId": "CHANGE_ME",
+    "clientSecret": "CHANGE_ME"
+  },
+  "identifier": "CHANGE.ME",
+  "tenant": "CHANGE_ME",
+  "productNumber": "CHANGE_ME"
+}
