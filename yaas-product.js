@@ -5,9 +5,13 @@ var pathProductBase = '/hybris/product/v2/{{projectId}}/products';
 var Product = function(rh) {
 	this.requestHelper = rh;
 
-	this.getProduct = function(productId, fields) {
+	this.getProduct = function(productId, fields, variants) {
 		var queryParameters = (fields ? {fields: fields} : {});
-		return this.requestHelper.get(pathProductBase + '/' + productId, queryParameters);
+                var path = pathProductBase + '/' + productId;
+                if (variants) {
+                    path += '/variants';
+                }
+		return this.requestHelper.get(path, queryParameters);
 	};
 
 	function checkParameters(queryParameters) {
