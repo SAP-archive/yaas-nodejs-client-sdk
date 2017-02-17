@@ -12,7 +12,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
     this.clientSecret= theClientSecret;
     this.scope = theScope;
     this.projectId = theProjectId;
-    this.acceptLanguage = undefined;
+    this.language = undefined;
 
     this.getToken = function() {
 
@@ -93,8 +93,9 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
     this.sendRequest = function(method, path, mime, data) {
         var headers = {};
 
-        if (this.acceptLanguage) {
-            headers['Accept-Language'] = this.acceptLanguage;
+        if (this.language) {
+            headers['Accept-Language'] = this.language;
+            headers['Content-Language'] = this.language;
         }
 
         if (mime) {
@@ -210,7 +211,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
     };
 
     this.setLanguage = function(value) {
-        this.acceptLanguage = value;
+        this.language = value;
     };
 
     this.logDebug = function(message) {
