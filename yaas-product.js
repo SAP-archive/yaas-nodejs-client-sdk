@@ -2,22 +2,22 @@
 
 var pathProductBase = '/hybris/product/v2/{{projectId}}/products';
 
-var Product = function(rh) {
+var Product = function (rh) {
 	this.requestHelper = rh;
 
-	this.getProduct = function(productId, fields, variants) {
-		var queryParameters = (fields ? {fields: fields} : {});
-                var path = pathProductBase + '/' + productId;
-                if (variants) {
-                    path += '/variants';
-                }
+	this.getProduct = function (productId, fields, variants) {
+		var queryParameters = (fields ? { fields: fields } : {});
+		var path = pathProductBase + '/' + productId;
+		if (variants) {
+			path += '/variants';
+		}
 		return this.requestHelper.get(path, queryParameters);
 	};
 
 	function checkParameters(queryParameters) {
 		var qp = {};
 		qp.q = queryParameters.q;
-		
+
 		if (qp.sort) {
 			qp.sort = queryParameters.sort;
 		}
@@ -30,12 +30,12 @@ var Product = function(rh) {
 		if (qp.effectiveDate) {
 			qp.effectiveDate = queryParameters.effectiveDate;
 		}
-		
+
 		return qp;
 	}
 
-	this.getProducts = function(queryParameters) {
-		
+	this.getProducts = function (queryParameters) {
+
 		var qp = checkParameters(queryParameters);
 
 		var q = [];
@@ -52,9 +52,23 @@ var Product = function(rh) {
 		return this.requestHelper.get(pathProductBase, qp);
 	};
 
-        this.updateProduct = function(product) {
+	this.updateProduct = function (product) {
 		return this.requestHelper.put(pathProductBase + '/' + product.id, 'application/json', product);
-        };
+	};
+
+	this.createProduct = function (product) {
+		return this.requestHelper.post(pathProductBase, 'application/json', product);
+	};
+
+	this.createMediaForProduct = function (productId, mediaMetadata) {
+		return this.requestHelper.post(pathProductBase + '/' + productId + '/media',
+			'application/json', mediaMetadata);
+	}
+
+	this.commit = function (productId, mediaId) {
+		return this.requestHelper.post(pathProductBase + '/' + productId + '/media/' + mediaId + '/commit');
+	}
+
 };
 
 module.exports = Product;
