@@ -56,17 +56,31 @@ var Product = function (rh) {
 		return this.requestHelper.put(pathProductBase + '/' + product.id, 'application/json', product);
 	};
 
-	this.createProduct = function (product) {
-		return this.requestHelper.post(pathProductBase, 'application/json', product);
+	this.createProduct = function (product, productIdForVariant) {
+		if (productIdForVariant) {
+			return this.requestHelper.post(pathProductBase + '/' + productIdForVariant + '/variants', 'application/json', product);
+		} else {
+			return this.requestHelper.post(pathProductBase, 'application/json', product);
+		}
 	};
 
-	this.createMediaForProduct = function (productId, mediaMetadata) {
-		return this.requestHelper.post(pathProductBase + '/' + productId + '/media',
-			'application/json', mediaMetadata);
+	this.createMediaForProduct = function (productId, mediaMetadata, productIdForVariant) {
+		if (productIdForVariant) {
+			return this.requestHelper.post(pathProductBase + '/' + productIdForVariant + '/variants/' + productId + '/media',
+				'application/json', mediaMetadata);
+		} else {
+			return this.requestHelper.post(pathProductBase + '/' + productId + '/media',
+				'application/json', mediaMetadata);
+		}
 	}
 
-	this.commit = function (productId, mediaId) {
-		return this.requestHelper.post(pathProductBase + '/' + productId + '/media/' + mediaId + '/commit');
+	this.commit = function (productId, mediaId, productIdForVariant) {
+		if (productIdForVariant) {
+			return this.requestHelper.post(pathProductBase + '/' + productIdForVariant + '/variants/' + productId + '/media/' + mediaId + '/commit');
+		} else {
+			return this.requestHelper.post(pathProductBase + '/' + productId + '/media/' + mediaId + '/commit');
+		}
+
 	}
 
 };
