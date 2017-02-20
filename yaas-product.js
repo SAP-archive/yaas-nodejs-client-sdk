@@ -18,16 +18,16 @@ var Product = function (rh) {
 		var qp = {};
 		qp.q = queryParameters.q;
 
-		if (qp.sort) {
+		if (queryParameters.sort) {
 			qp.sort = queryParameters.sort;
 		}
-		if (qp.pageNumber) {
+		if (queryParameters.pageNumber) {
 			qp.pageNumber = queryParameters.pageNumber;
 		}
-		if (qp.pageSize) {
+		if (queryParameters.pageSize) {
 			qp.pageSize = queryParameters.pageSize;
 		}
-		if (qp.effectiveDate) {
+		if (queryParameters.effectiveDate) {
 			qp.effectiveDate = queryParameters.effectiveDate;
 		}
 
