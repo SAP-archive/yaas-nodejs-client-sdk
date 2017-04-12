@@ -13,6 +13,7 @@ var DocumentService = require('./yaas-document.js');
 var CouponService = require('./yaas-coupon.js');
 var LoyaltyConfigurationService = require('./yaas-loyalty-configuration.js');
 var LoyaltyMemberService = require('./yaas-loyalty-member.js');
+var EmailService = require("./yaas-email.js");
 
 var language = undefined;
 
@@ -33,6 +34,7 @@ var Yaas = function() {
         this.coupon = new CouponService(this.requestHelper);
         this.loyaltyConfiguration = new LoyaltyConfigurationService(this.requestHelper);
         this.loyaltyMember = new LoyaltyMemberService(this.requestHelper);
+        this.email = new EmailService(this.requestHelper);
 
         if (yaasExtensions) {
           yaasExtensions.forEach(function(extension) {
