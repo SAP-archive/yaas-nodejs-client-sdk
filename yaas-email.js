@@ -15,11 +15,11 @@ var Email = function (rh) {
     };
 
     this.send = function (body) {
-        _genericEmailSender("send", body);
+        return _genericEmailSender("send", body);
     };
 
     this.sendSync = function (body) {
-        _genericEmailSender("send-sync", body);
+        return _genericEmailSender("send-sync", body);
     };
 
 };
