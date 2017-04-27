@@ -3,6 +3,11 @@
 var https = require('https');
 var querystring = require('querystring');
 
+function preparePath (path, params) {
+    var queryParamString = querystring.stringify(params);
+    return path + (queryParamString.length > 0 ? '?' + queryParamString : '');
+};
+
 var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectId, overrideApiUrl) {
     /* Constants */
     this.yaasHost = (overrideApiUrl) ? overrideApiUrl : 'api.yaas.io';
@@ -141,24 +146,20 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
         }.bind(this));
     };
 
-    this.delete = function(path) {
-        return this.sendRequest('DELETE', path, null, {});
+    this.delete = function(path, params) {
+        return this.sendRequest('DELETE', preparePath(path, params), null, {});
     };
 
     this.get = function(path, params) {
-        var queryParamString = querystring.stringify(params);
-        var pathWithParams = path + (queryParamString.length > 0 ? '?' + queryParamString : '');
-        return this.sendRequest('GET', pathWithParams, null, {});
+        return this.sendRequest('GET', preparePath(path, params), null, {});
     };
 
-    this.post = function(path, mime, postData) {
-        return this.sendRequest('POST', path, mime, this.prepareData(postData, mime));
+    this.post = function(path, mime, postData, params) {
+        return this.sendRequest('POST', preparePath(path, params), mime, this.prepareData(postData, mime));
     };
 
     this.put = function(path, mime, putData, params) {
-        var queryParamString = querystring.stringify(params);
-        var pathWithParams = path + (queryParamString.length > 0 ? '?' + queryParamString : '');
-        return this.sendRequest('PUT', pathWithParams, mime, this.prepareData(putData, mime));
+        return this.sendRequest('PUT', preparePath(path, params), mime, this.prepareData(putData, mime));
     };
 
     this.prepareData = function(data, mime) {
