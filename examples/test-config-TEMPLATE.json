@@ -5,5 +5,9 @@
   },
   "identifier": "CHANGE.ME",
   "tenant": "CHANGE_ME",
-  "productNumber": "CHANGE_ME"
+  "productNumber": "CHANGE_ME",
+
+  "customerEmailAddress": "CHANGE_ME",
+  "siteCode": "main",
+  "currency": "USD"
 }
