@@ -36,7 +36,7 @@ yaas.product.getProducts(query)
 
     // get the cart by the customer email
     .then(() => getCartByCustomerEmail(yaas,
-        config.customerEmailAddress,
+        config.emailaddress,
         config.siteCode,
         config.currency))
     .then(response => {
