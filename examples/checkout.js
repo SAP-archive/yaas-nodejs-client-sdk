@@ -1,6 +1,9 @@
 // Note: to run this example you have to install the stripe package
 //       npm install stripe
 //
+// Note: In Commerce Settings the Payment Settings for Stripe 
+//       at the YaaS Builder have to be configured.
+//
 
 // need more logging?
 var VERBOSE = 0;
