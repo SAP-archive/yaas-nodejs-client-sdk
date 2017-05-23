@@ -6,8 +6,16 @@
   "identifier": "CHANGE.ME",
   "tenant": "CHANGE_ME",
   "productNumber": "CHANGE_ME",
-
+  
   "emailaddress": "CHANGE_ME",
   "siteCode": "main",
-  "currency": "USD"
+  "currency": "USD",
+
+  "stripe": {
+    "stripe_api_key": "CHANGE_ME",
+    "credit_card_number": "4242424242424242",
+    "credit_card_cvc": 123,
+    "credit_card_expiry_month": 12,
+    "credit_card_expiry_year": 2022
+  }
 }
