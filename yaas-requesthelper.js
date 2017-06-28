@@ -151,6 +151,12 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
         return this.sendRequest('GET', pathWithParams, null, {});
     };
 
+    this.head = function(path, params) {
+        var queryParamString = querystring.stringify(params);
+        var pathWithParams = path + (queryParamString.length > 0 ? '?' + queryParamString : '');
+        return this.sendRequest('HEAD', pathWithParams, null, {});
+    };
+
     this.post = function(path, mime, postData) {
         return this.sendRequest('POST', path, mime, this.prepareData(postData, mime));
     };
@@ -190,7 +196,7 @@ var RequestHelper = function(theClientId, theClientSecret, theScope, theProjectI
             break;
           case 'application/json':
             try {
-              responseBody = JSON.parse(response.body);
+              responseBody = response.body ? JSON.parse(response.body) : null;
             } catch (e) {
               reject('Could not read server response: ' + e.message);
             }

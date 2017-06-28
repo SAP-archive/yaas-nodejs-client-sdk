@@ -9,6 +9,10 @@ var Document = function(rh) {
     return this.requestHelper.get(pathDocumentBase + '/' + applicationId + '/data/' + documentType, queryParameters);
   };
 
+  this.getCount = function(applicationId, documentType, queryParameters) {
+    return this.requestHelper.head(pathDocumentBase + '/' + applicationId + '/data/' + documentType, queryParameters);
+  };
+
   this.get = function(applicationId, documentType, documentId, queryParameters) {
     return this.requestHelper.get(
       pathDocumentBase + '/' + applicationId + '/data/' + documentType + '/' + documentId, 
